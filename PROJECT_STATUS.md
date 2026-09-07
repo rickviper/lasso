@@ -21,4 +21,9 @@ Phase 0 — minimum viable Android project (scaffold only).
 
 ## Test Results
 
-- Pending device validation by human tester.
+- Round 1 (FAIL): install + launch OK, but both TextViews clipped on the
+  right ("Circle Searc" / "Phase 0 — project scaffol…"). Cause: code-related —
+  `wrap_content` TextViews in a centered layout overflow instead of wrapping
+  under the device's large system font. Fix: `match_parent` width +
+  `center_horizontal` gravity so text wraps. Rebuilt 2026-09-07, retest pending.
+- Round 2: pending device validation by human tester (fixed APK).
