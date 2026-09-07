@@ -4,7 +4,7 @@ import android.content.Intent
 import android.service.quicksettings.TileService
 import android.util.Log
 
-/** Phase 2 probe: Quick Settings tile as ACTIVATE trigger. */
+/** Phase 2 secondary trigger: Quick Settings tile calls [Activation]. */
 class ProbeTile : TileService() {
 
     override fun onTileAdded() {
@@ -19,12 +19,8 @@ class ProbeTile : TileService() {
 
     override fun onClick() {
         super.onClick()
-        ProbeState.tileClicks++
-        Log.i(GestureService.TAG, "tile clicked count=${ProbeState.tileClicks}")
-        qsTile?.let {
-            it.label = "Probe ${ProbeState.tileClicks}"
-            it.updateTile()
-        }
+        Activation.trigger(this, Activation.SOURCE_TILE)
+        // Collapse QS into the dashboard so the activation is visible.
         startActivityAndCollapse(
             Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )

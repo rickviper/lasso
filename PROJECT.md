@@ -5,37 +5,29 @@ Circle-to-Search-style experience.
 
 Target UX: ACTIVATE → CIRCLE → SEARCH
 
-## Architecture (as of Phase 2)
+## Architecture (as of Phase 2 completion spec)
 
-Single-module native Android app. Phase 2 adds minimal activation-mechanism
-probes only (no capture, overlay selection, search, or production UI).
+Single-module native Android app. Both triggers call one centralized
+`Activation.trigger(context, source)` (log + per-source count + Toast; no
+overlay, capture, cropping, or search).
 
-- `GestureService.kt` — Phase 1 fingerprint probe (closed: NOT AVAILABLE) +
-  Phase 2 probes: system-wide volume-key observation via `onKeyEvent`
-  (never consumes; counts VOL_DOWN double-press) and accessibility-button
-  clicks via `AccessibilityButtonController` (`flagRequestAccessibilityButton`).
-- `ProbeTile.kt` — `TileService` probe (tap count + opens app).
-- `OverlayService.kt` — foreground-service floating-dot probe (tap count +
-  opens app; `TYPE_APPLICATION_OVERLAY`, `specialUse` FGS type).
-- `MainActivity.kt` — probe dashboard for all states + overlay-permission flow.
-
-Single-module native Android app. No backend, no libraries, no capture,
-no overlay, no search yet.
+- `Activation.kt` — the single activation function both triggers call.
+- `GestureService.kt` — primary trigger: accessibility-shortcut taps via
+  `AccessibilityButtonController` → `Activation`; keeps the Phase 1
+  fingerprint-availability readout. No event processing, no key observation.
+- `ProbeTile.kt` — secondary trigger: `TileService.onClick` → `Activation`,
+  then collapses QS into the dashboard.
+- `MainActivity.kt` — dashboard: service state, per-source activation counts,
+  last activation.
+- Dropped and removed: volume-key observer, overlay dot service + permissions.
 
 - `app/` — sole Android application module.
-  - `src/main/AndroidManifest.xml` — manifest; LAUNCHER `MainActivity` +
-    `GestureService` (bound with `BIND_ACCESSIBILITY_SERVICE`).
-  - `src/main/java/com/ullas/circlesearch/GestureService.kt` — Phase 1 probe:
-    `AccessibilityService` requesting fingerprint-gesture capability; reads
-    `FingerprintGestureController.isGestureDetectionAvailable`, registers a
-    gesture callback when available, records results in `ProbeState` and
-    `Log.i` (`CircleSearchProbe` tag). Processes no accessibility events.
-  - `src/main/java/com/ullas/circlesearch/MainActivity.kt` — probe screen:
-    shows service-enabled state, gesture availability, last gesture and
-    per-direction counts (refreshed in `onResume` / on demand); button opens
-    Accessibility Settings.
+  - `src/main/AndroidManifest.xml` — LAUNCHER `MainActivity`, `GestureService`
+    (bound with `BIND_ACCESSIBILITY_SERVICE`), `ProbeTile` (bound with
+    `BIND_QUICK_SETTINGS_TILE`). No special permissions.
   - `src/main/res/` — `layout/activity_main.xml`, `values/strings.xml`,
-    `xml/accessibilityservice.xml` (`canRequestFingerprintGestures="true"`).
+    `xml/accessibilityservice.xml` (`flagRequestAccessibilityButton` +
+    `canRequestFingerprintGestures`), `drawable/ic_trigger_dot.xml` (tile icon).
 - Root Gradle files: `settings.gradle`, `build.gradle`, `gradle.properties`,
   Gradle wrapper (`gradlew`, `gradle/wrapper/`).
 
@@ -77,8 +69,9 @@ activation).
 
 - Phase 0: scaffold + debug APK installs/launches on Xiaomi 11i (done).
 - Phase 1: fingerprint-gesture feasibility probe (closed: NOT AVAILABLE).
-- Phase 2: activation mechanism investigation (current) — tester chooses the
-  mechanism before further development.
+- Phase 2: GLOBAL TRIGGER (current) — accessibility shortcut (primary) +
+  QS tile (secondary) wired to centralized `Activation`; tester validates
+  on-device before closure.
 - Future phases (not implemented): activation trigger, overlay selection UI,
   region extraction, visual search, results presentation. Each phase is
   specified and device-validated separately per AGENTS.md.

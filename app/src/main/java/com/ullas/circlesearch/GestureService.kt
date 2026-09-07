@@ -6,18 +6,17 @@ import android.accessibilityservice.FingerprintGestureController
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 
 /**
- * Phase 1 fingerprint probe + Phase 2 activation probes (volume keys,
- * accessibility button). All probes observe only and log with tag [TAG].
+ * Phase 2 trigger service: keeps the fingerprint-availability readout (Phase 1
+ * verdict) and routes accessibility-shortcut taps to [Activation].
+ * Processes no accessibility events and observes no hardware keys.
  */
 class GestureService : AccessibilityService() {
 
     companion object {
         const val TAG = "CircleSearchProbe"
-        const val DOUBLE_PRESS_WINDOW_MS = 600L
     }
 
     private val gestureCallback = object : FingerprintGestureController.FingerprintGestureCallback() {
@@ -40,18 +39,17 @@ class GestureService : AccessibilityService() {
     private val buttonCallback = object : AccessibilityButtonController.AccessibilityButtonCallback() {
         override fun onClicked(controller: AccessibilityButtonController) {
             super.onClicked(controller)
-            ProbeState.a11yButtonClicks++
-            Log.i(TAG, "accessibility button clicked count=${ProbeState.a11yButtonClicks}")
+            Activation.trigger(this@GestureService, Activation.SOURCE_SHORTCUT)
         }
 
         override fun onAvailabilityChanged(controller: AccessibilityButtonController, available: Boolean) {
             super.onAvailabilityChanged(controller, available)
-            ProbeState.a11yButtonAvailable = available
+            // Informational only: on this MIUI build clicks arrive even when
+            // the API reports unavailable, so clicks are the ground truth.
             Log.i(TAG, "accessibility button availability: $available")
         }
     }
 
-    private var lastVolumeDownMs = 0L
     private val mainHandler = Handler(Looper.getMainLooper())
 
     override fun onServiceConnected() {
@@ -66,38 +64,8 @@ class GestureService : AccessibilityService() {
             Log.i(TAG, "gesture callback registered")
         }
         val buttonController = accessibilityButtonController
-        ProbeState.a11yButtonAvailable = buttonController.isAccessibilityButtonAvailable
         buttonController.registerAccessibilityButtonCallback(buttonCallback, mainHandler)
-        Log.i(TAG, "button callback registered, buttonAvailable=${ProbeState.a11yButtonAvailable}")
-    }
-
-    /**
-     * Phase 2 volume probe: observes volume keys system-wide. Never consumes
-     * events (zero interference); detects VOL_DOWN double-press.
-     */
-    override fun onKeyEvent(event: KeyEvent): Boolean {
-        val name = when (event.keyCode) {
-            KeyEvent.KEYCODE_VOLUME_DOWN -> "VOLUME_DOWN"
-            KeyEvent.KEYCODE_VOLUME_UP -> "VOLUME_UP"
-            else -> null
-        }
-        if (name != null) {
-            val action = if (event.action == KeyEvent.ACTION_DOWN) "DOWN" else "UP"
-            ProbeState.lastVolumeKey = "$name $action repeat=${event.repeatCount}"
-            ProbeState.lastVolumeTimeMillis = System.currentTimeMillis()
-            Log.i(TAG, "key event: $name $action repeat=${event.repeatCount}")
-            if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN &&
-                event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0
-            ) {
-                val now = System.currentTimeMillis()
-                if (now - lastVolumeDownMs <= DOUBLE_PRESS_WINDOW_MS) {
-                    ProbeState.volumeDoublePressCount++
-                    Log.i(TAG, "volume double-press detected count=${ProbeState.volumeDoublePressCount}")
-                }
-                lastVolumeDownMs = now
-            }
-        }
-        return super.onKeyEvent(event)
+        Log.i(TAG, "button callback registered")
     }
 
     override fun onUnbind(intent: android.content.Intent?): Boolean {
@@ -144,15 +112,8 @@ object ProbeState {
     @Volatile var lastGestureTimeMillis: Long = 0L
     val gestureCounts: MutableMap<String, Int> = mutableMapOf()
 
-    @Volatile var lastVolumeKey: String? = null
-    @Volatile var lastVolumeTimeMillis: Long = 0L
-    @Volatile var volumeDoublePressCount: Int = 0
-
-    @Volatile var a11yButtonAvailable: Boolean? = null
-    @Volatile var a11yButtonClicks: Int = 0
-
-    @Volatile var tileClicks: Int = 0
-
-    @Volatile var overlayShown: Boolean = false
-    @Volatile var overlayTaps: Int = 0
+    /** Centralized activation results, written only by [Activation]. */
+    val activationCounts: MutableMap<String, Int> = mutableMapOf()
+    @Volatile var lastActivationSource: String? = null
+    @Volatile var lastActivationTimeMillis: Long = 0L
 }

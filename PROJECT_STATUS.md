@@ -2,9 +2,21 @@
 
 ## Current Phase
 
-Phase 2 — activation mechanism investigation IN PROGRESS (premature
-completion claim reverted 2026-09-07 on tester feedback; checkpoint commit
-undone).
+Phase 2 — GLOBAL TRIGGER. Implementation complete (`0.4.0-phase2`);
+device validation pending. NOT complete until tester confirms.
+
+## Phase 2 Acceptance Criteria
+
+- [x] `./gradlew assembleDebug` succeeds (`0.4.0-phase2`, versionCode 4).
+- [ ] APK installs on the Xiaomi 11i (reinstall over 0.3.0).
+- [ ] Shortcut tap while another app is foreground → Toast
+  "Circle Search activated (accessibility-shortcut)" + shortcut count +1.
+- [ ] QS tile tap → Toast "Circle Search activated (quick-settings-tile)"
+  + tile count +1, app dashboard opens.
+- [ ] Both triggers route through the single `Activation.trigger` function
+  (verified in code; one log line `activated via <source>` each).
+- [ ] No overlay, capture, cropping, search, or Lens code present.
+- [ ] Human tester explicitly confirms pass.
 
 ## Completed Phases
 
@@ -83,3 +95,9 @@ undone).
     seen. Suspected MIUI FGS/background kill (or API-33 `specialUse`-type
     issue); needs logcat to diagnose. Lowest priority given two proven options.
   - Awaiting tester choice of mechanism.
+- Phase 2 completion spec (tester instruction 2026-09-07): GLOBAL TRIGGER —
+  a11y shortcut primary + QS tile secondary, both calling centralized
+  `Activation.trigger`; no overlay/capture/search.
+- Phase 2 implementation complete 2026-09-07 (`0.4.0-phase2`, versionCode 4):
+  `Activation.kt` added; shortcut + tile wired to it; volume observer and
+  overlay service/permissions removed. Device validation pending.
