@@ -7,7 +7,7 @@ device validation pending. NOT complete until tester confirms.
 
 ## Phase 4 Acceptance Criteria
 
-- [x] `./gradlew assembleDebug` succeeds (`0.7.4-phase4`, versionCode 11).
+- [x] `./gradlew assembleDebug` succeeds (`0.7.5-phase4`, versionCode 12).
 - [ ] APK installs on the Xiaomi 11i.
 - [ ] Phase 3 overlay still works (draw, persistent stroke, Cancel, back).
 - [ ] Confirm with a circle → overlay hides → system screen-cast consent
@@ -58,6 +58,16 @@ device validation pending. NOT complete until tester confirms.
   Pictures/CircleSearch (no permission needed for own files on API 29+);
   app-private PNG stays the next phase's source. Dashboard appends
   "+ gallery" on success.
+- Round 5 (FAIL): captures alternate good / completely-black across taps.
+  Cause class: capture-timing fragility — we grabbed the very first queued
+  frame, which during consent-exit/task transitions (or as a
+  placeholder/fence-not-ready buffer) can be blank. Fix (`0.7.5-phase4`,
+  v12): 600ms settle delay after display creation, skip first 2 frames,
+  keep polling up to 4s preferring the first non-blank frame (64-pixel grid
+  check), save last blank only if nothing better arrives; frame stats logged
+  (`frames seen=X skipped=Y usedBlank=Z`). If black persists, those stats +
+  whether the consent dialog appeared each time narrow it to a stateful
+  cause (secure content / MIUI mirror quirk).
 
 ## Phase 3 Acceptance Criteria
 

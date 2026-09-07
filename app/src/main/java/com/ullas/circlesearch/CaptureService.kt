@@ -41,7 +41,9 @@ class CaptureService : Service() {
         const val EXTRA_DENSITY = "density"
         private const val CHANNEL_ID = "capture_service"
         private const val NOTIF_ID = 42
-        private const val FRAME_WAIT_MS = 2000L
+        private const val FRAME_WAIT_MS = 4000L
+        private const val SETTLE_MS = 600L
+        private const val SKIP_FRAMES = 2
     }
 
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -111,6 +113,9 @@ class CaptureService : Service() {
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             reader.surface, null, null
         )
+        // Let the consent-dialog exit + task transitions settle: grabbing the
+        // very first frames risks transition/placeholder (black) buffers.
+        Thread.sleep(SETTLE_MS)
         try {
             val saved = grabFrame(reader, width, height)
             if (saved != null) {
@@ -144,30 +149,75 @@ class CaptureService : Service() {
 
     private fun grabFrame(reader: ImageReader, width: Int, height: Int): File? {
         val deadline = SystemClock.uptimeMillis() + FRAME_WAIT_MS
-        var bitmap: Bitmap? = null
-        while (SystemClock.uptimeMillis() < deadline && bitmap == null) {
+        var skipped = 0
+        var seen = 0
+        var best: Bitmap? = null
+        var bestBlank = true
+        while (SystemClock.uptimeMillis() < deadline && bestBlank) {
             val image = reader.acquireLatestImage()
             if (image == null) {
-                Thread.sleep(50)
+                Thread.sleep(100)
                 continue
             }
-            image.use { img ->
-                val plane = img.planes[0]
-                val buffer = plane.buffer
-                val rowPadding = plane.rowStride - plane.pixelStride * width
-                val paddedWidth = width + rowPadding / plane.pixelStride
-                val padded = Bitmap.createBitmap(paddedWidth, height, Bitmap.Config.ARGB_8888)
-                padded.copyPixelsFromBuffer(buffer)
-                bitmap = Bitmap.createBitmap(padded, 0, 0, width, height)
-                padded.recycle()
+            seen++
+            val bmp = image.use { img -> imageToBitmap(img, width, height) }
+            if (bmp == null) continue
+            if (skipped < SKIP_FRAMES) {
+                skipped++
+                bmp.recycle()
+                continue
+            }
+            if (!isBlank(bmp)) {
+                best?.recycle()
+                best = bmp
+                bestBlank = false
+            } else {
+                // Blank frame: keep as fallback, keep waiting for a real one.
+                best?.recycle()
+                best = bmp
+                Thread.sleep(100)
             }
         }
-        val bmp = bitmap ?: return null
+        Log.i(Activation.TAG, "frames seen=$seen skipped=$skipped usedBlank=$bestBlank")
+        val bmp = best ?: return null
         val dir = File(filesDir, "captures").apply { mkdirs() }
         val out = File(dir, "capture_${System.currentTimeMillis()}.png")
         FileOutputStream(out).use { stream -> bmp.compress(Bitmap.CompressFormat.PNG, 100, stream) }
         bmp.recycle()
         return out
+    }
+
+    private fun imageToBitmap(
+        image: android.media.Image,
+        width: Int,
+        height: Int
+    ): Bitmap? {
+        val plane = image.planes[0]
+        val buffer = plane.buffer
+        val rowPadding = plane.rowStride - plane.pixelStride * width
+        if (rowPadding < 0) return null
+        val paddedWidth = width + rowPadding / plane.pixelStride
+        val padded = Bitmap.createBitmap(paddedWidth, height, Bitmap.Config.ARGB_8888)
+        padded.copyPixelsFromBuffer(buffer)
+        val cropped = Bitmap.createBitmap(padded, 0, 0, width, height)
+        padded.recycle()
+        return cropped
+    }
+
+    /** True if every sampled pixel is pure black (placeholder/fence frame). */
+    private fun isBlank(bmp: Bitmap): Boolean {
+        val stepX = maxOf(1, bmp.width / 8)
+        val stepY = maxOf(1, bmp.height / 8)
+        var y = 0
+        while (y < bmp.height) {
+            var x = 0
+            while (x < bmp.width) {
+                if ((bmp.getPixel(x, y) and 0x00FFFFFF) != 0) return false
+                x += stepX
+            }
+            y += stepY
+        }
+        return true
     }
 
     /**
