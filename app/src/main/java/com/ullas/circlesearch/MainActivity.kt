@@ -36,6 +36,7 @@ class MainActivity : Activity() {
             "$source at ${timeFormat.format(Date(ProbeState.lastActivationTimeMillis))}"
         } ?: "(none yet)"
         out.appendLine("Last activation: $last")
+        out.appendLine("Last selection: ${ProbeState.lastSelection ?: "(none yet)"}")
         statusView.text = out.toString().trimEnd()
     }
 }

@@ -5,18 +5,27 @@ Circle-to-Search-style experience.
 
 Target UX: ACTIVATE → CIRCLE → SEARCH
 
-## Architecture (as of Phase 2 tile-only)
+## Architecture (as of Phase 3)
 
-Single-module native Android app. The Quick Settings tile is the sole
-trigger and calls centralized `Activation.trigger` (log + count +
-best-effort Toast; no overlay, capture, cropping, or search).
+Single-module native Android app. Tile tap → `Activation` → translucent
+fullscreen `OverlayActivity` above the foreground app (zero permissions).
+
+- `Activation.kt` — centralized trigger + `ProbeState` (counts, last selection).
+- `ProbeTile.kt` — sole trigger: `TileService.onClick` → `Activation`, then
+  collapses QS into the overlay.
+- `OverlayActivity.kt` + `activity_overlay.xml` — dimmed surface, Cancel /
+  Confirm buttons; Confirm logs selection bounds (no capture/search yet).
+- `SelectionView.kt` — single-finger freehand path with quadratic smoothing;
+  stroke persists after release; new touch replaces the selection.
+- `MainActivity.kt` — dashboard: tile count, last activation, last selection.
 
 - `Activation.kt` — centralized trigger + `ProbeState` counts.
 - `ProbeTile.kt` — `TileService.onClick` → `Activation`, then collapses QS
-  into the dashboard.
-- `MainActivity.kt` — dashboard: tile activation count, last activation.
+  into the overlay.
+- `MainActivity.kt` — dashboard: tile activation count, last activation,
+  last selection bounds.
 - No permissions. No accessibility service (dropped with the shortcut).
-- Dropped and removed: fingerprint/volume/power/overlay/shortcut paths.
+- Dropped and removed: fingerprint/volume/power/overlay-dot/shortcut paths.
 
 - `app/` — sole Android application module.
   - `src/main/AndroidManifest.xml` — LAUNCHER `MainActivity` + `ProbeTile`
@@ -68,9 +77,9 @@ activation).
 
 - Phase 0: scaffold + debug APK installs/launches on Xiaomi 11i (done).
 - Phase 1: fingerprint-gesture feasibility probe (closed: NOT AVAILABLE).
-- Phase 2: GLOBAL TRIGGER (current) — accessibility shortcut (primary) +
-  QS tile (secondary) wired to centralized `Activation`; tester validates
-  on-device before closure.
-- Future phases (not implemented): activation trigger, overlay selection UI,
-  region extraction, visual search, results presentation. Each phase is
-  specified and device-validated separately per AGENTS.md.
+- Phase 2: GLOBAL TRIGGER (done) — QS tile wired to centralized `Activation`.
+- Phase 3: SELECTION OVERLAY (current) — fullscreen freehand circle UI with
+  Cancel/Confirm; tester validates on-device before closure.
+- Future phases (not implemented): region extraction, visual search, results
+  presentation. Each phase is specified and device-validated separately
+  per AGENTS.md.

@@ -20,9 +20,9 @@ class ProbeTile : TileService() {
     override fun onClick() {
         super.onClick()
         Activation.trigger(this, Activation.SOURCE_TILE)
-        // Collapse QS into the dashboard so the activation is visible.
+        // Collapse QS into the selection overlay (Phase 3).
         startActivityAndCollapse(
-            Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            Intent(this, OverlayActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
     }
 }
