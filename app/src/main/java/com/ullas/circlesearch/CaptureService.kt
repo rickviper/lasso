@@ -52,18 +52,26 @@ class CaptureService : Service() {
     }
 
     private val mainHandler = Handler(Looper.getMainLooper())
+    private val captureLock = java.util.concurrent.atomic.AtomicBoolean(false)
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (!captureLock.compareAndSet(false, true)) {
+            Log.w(Activation.TAG, "capture already in progress, ignoring duplicate start")
+            stopSelf()
+            return START_NOT_STICKY
+        }
         startAsForeground()
         Thread {
             try {
                 capture(intent)
             } catch (e: Exception) {
                 Log.w(Activation.TAG, "capture failed: $e")
+                ProbeState.lastCapture = "FAILED (error)"
                 toast("Capture failed", long = false)
             } finally {
+                captureLock.set(false)
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
             }
@@ -131,6 +139,8 @@ class CaptureService : Service() {
                 Log.i(Activation.TAG, "captured: $info")
                 toast("Captured: $info", long = true)
             } else {
+                ProbeState.lastCapture = "FAILED (no frame)"
+                ProbeState.lastCrop = "(no capture)"
                 toast("Capture failed (no frame)", long = false)
             }
         } finally {
@@ -235,6 +245,7 @@ class CaptureService : Service() {
         val bounds = ProbeState.selectionBounds
         if (bounds == null || bounds.isEmpty) {
             Log.i(Activation.TAG, "crop skipped: no selection bounds")
+            ProbeState.lastCrop = "skipped (no bounds)"
             CropHolder.replace(null)
             return
         }
@@ -248,6 +259,7 @@ class CaptureService : Service() {
             val ch = bottom - top
             if (cw < MIN_CROP_PX || ch < MIN_CROP_PX) {
                 Log.i(Activation.TAG, "crop skipped: clamped region too small ${cw}x$ch")
+                ProbeState.lastCrop = "skipped (too small ${cw}x$ch)"
                 CropHolder.replace(null)
                 return
             }
@@ -264,6 +276,7 @@ class CaptureService : Service() {
             Log.i(Activation.TAG, "cropped: $info from bounds $bounds")
         } catch (e: Exception) {
             Log.w(Activation.TAG, "crop failed: $e")
+            ProbeState.lastCrop = "skipped (error)"
             CropHolder.replace(null)
         }
     }

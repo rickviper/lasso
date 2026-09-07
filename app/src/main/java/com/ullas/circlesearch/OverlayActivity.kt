@@ -57,6 +57,8 @@ class OverlayActivity : Activity() {
             Toast.makeText(this, "Draw a circle first", Toast.LENGTH_SHORT).show()
             return
         }
+        // Prevent double-tap spawning duplicate consent + capture flows.
+        findViewById<Button>(R.id.btn_confirm).isEnabled = false
         val text = "left=${bounds.left.toInt()} top=${bounds.top.toInt()} " +
             "right=${bounds.right.toInt()} bottom=${bounds.bottom.toInt()}"
         ProbeState.lastSelection = text
@@ -78,6 +80,7 @@ class OverlayActivity : Activity() {
             Log.i(Activation.TAG, "capture consent denied, overlay restored")
             Toast.makeText(this, "Capture declined", Toast.LENGTH_SHORT).show()
             rootView.visibility = View.VISIBLE
+            findViewById<Button>(R.id.btn_confirm).isEnabled = true
             return
         }
         val (width, height) = screenSize()

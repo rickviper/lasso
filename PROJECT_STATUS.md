@@ -7,7 +7,7 @@ device validation pending. NOT complete until tester confirms.
 
 ## Phase 5 Acceptance Criteria
 
-- [x] `./gradlew assembleDebug` succeeds (`0.8.0-phase5`, versionCode 13).
+- [x] `./gradlew assembleDebug` succeeds (`0.8.1-phase5`, versionCode 14).
 - [ ] APK installs on the Xiaomi 11i.
 - [ ] Portrait: circle an object → crop_REGION matches the circled area
   (+ small margin) in gallery `crop_<ts>.png`; dashboard `Last crop` line.
@@ -16,6 +16,19 @@ device validation pending. NOT complete until tester confirms.
 - [ ] Dot/tiny tap + Confirm: gracefully skipped (log `too small`), no crash.
 - [ ] No visual search, networking, or new permissions.
 - [ ] Human tester explicitly confirms pass.
+
+## Phase 5 Test Rounds
+
+- Round 1 (FAIL): file counts vary run to run (0–3 files: missing full,
+  duplicated fulls, missing crop). Causes: (1) concurrent duplicate service
+  starts (fast re-taps / double-tap Confirm) each capturing; (2) dashboard
+  showed STALE success lines after failures, hiding what actually happened;
+  (3) gallery accumulates all runs, so eyeball-counting mixes runs. Fix
+  (`0.8.1-phase5`, v14): re-entrancy guard (duplicate start ignored +
+  logged); Confirm disabled after first tap (re-enabled on deny); failure
+  paths now overwrite dashboard lines (FAILED/skipped markers, never stale).
+  Retest requires a clean slate (empty the CircleSearch album first) and
+  exact per-run filenames.
 
 ## Phase 4 Acceptance Criteria
 
