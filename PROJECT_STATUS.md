@@ -18,6 +18,15 @@ device validation pending. NOT complete until tester confirms.
 - [ ] No capture, cropping, search, Lens, networking, OCR, or AI code.
 - [ ] Human tester explicitly confirms pass.
 
+## Phase 3 Test Rounds
+
+- Round 1 (FAIL): overlay, buttons, and drawing all perfect, BUT the tile
+  brought our app task forward — the overlay sat on the dashboard instead of
+  the foreground app. Cause: code-related — `OverlayActivity` used the default
+  task affinity, so `FLAG_ACTIVITY_NEW_TASK` joined the existing app task.
+  Fix: `android:taskAffinity=""` (separate task layered above the foreground
+  app). Rebuilt, same version, retest pending.
+
 ## Phase 2 Acceptance Criteria (tile-only, revised 2026-09-07)
 
 - [x] `./gradlew assembleDebug` succeeds (`0.5.0-phase2`, versionCode 5).
