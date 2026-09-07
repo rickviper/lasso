@@ -1,0 +1,31 @@
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+}
+
+android {
+    namespace = "com.ullas.circlesearch"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "com.ullas.circlesearch"
+        minSdk = 26
+        targetSdk = 34
+        versionCode = 1
+        versionName = "0.1.0-phase0"
+    }
+
+    buildTypes {
+        release {
+            // Phase 0: no minification, no shrinking.
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}

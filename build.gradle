@@ -1,0 +1,5 @@
+// Top-level build file. Phase 0: plugin versions only, no custom logic.
+plugins {
+    id("com.android.application") version "8.5.2" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.24" apply false
+}

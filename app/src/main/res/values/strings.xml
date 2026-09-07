@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Circle Search</string>
+    <string name="phase_label">Phase 0 — project scaffold OK</string>
+</resources>
