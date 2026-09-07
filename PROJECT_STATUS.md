@@ -18,6 +18,21 @@ device validation pending. NOT complete until tester confirms.
 - [ ] No overlay, capture, cropping, search, or Lens code present.
 - [ ] Human tester explicitly confirms pass.
 
+## Phase 2 Test Rounds (0.4.0)
+
+- Round 1: tile tap opens app + tile count +1, but NO toast unless the app is
+  already open. Shortcut worked right after install, then died; Settings shows
+  the service as malfunctioning.
+- Diagnosis (§7): code-related prime suspect — unguarded `Toast` as the last
+  step of `Activation.trigger`. Counts increment (code before the toast runs),
+  then the toast attempt from a background process throws on this MIUI build,
+  killing the shared app process and taking the accessibility service down
+  (0.3.0 had no toast and survived 49 clicks). Possible contributor:
+  environment-related — reinstall may have reset MIUI battery/autostart
+  restrictions. Fix 2026-09-07: toast wrapped in try/catch (feedback can never
+  kill the service); counts + log remain ground truth. Rebuilt, retest pending
+  with service toggle + battery steps below.
+
 ## Completed Phases
 
 - Phase 0 — minimum viable Android project: scaffold builds, installs, and

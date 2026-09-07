@@ -23,6 +23,14 @@ object Activation {
         ProbeState.lastActivationSource = source
         ProbeState.lastActivationTimeMillis = System.currentTimeMillis()
         Log.i(GestureService.TAG, "activated via $source count=${ProbeState.activationCounts[source]}")
-        Toast.makeText(context, "Circle Search activated ($source)", Toast.LENGTH_SHORT).show()
+        // Toast is best-effort feedback only: on some MIUI builds showing a
+        // toast from a background process throws and would kill the shared
+        // app process (taking the accessibility service down with it).
+        // Counts + log are the ground truth; never let feedback crash us.
+        try {
+            Toast.makeText(context, "Circle Search activated ($source)", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.w(GestureService.TAG, "toast failed (suppressed on this build): $e")
+        }
     }
 }
