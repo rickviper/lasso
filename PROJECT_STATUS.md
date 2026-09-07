@@ -29,7 +29,11 @@ Implementation complete; device validation pending.
 
 ## Current Blockers
 
-- None.
+- Phase 1 Round 1: enabling the service shows "Restricted setting / For your
+  security, this setting is currently unavailable." Cause: environment-related
+  (Android 13 OS security, not code) — sideloaded apps (adb/APK install) are
+  blocked from accessibility access until the user grants "Allow restricted
+  settings" on the app info screen. No rebuild needed; tester action required.
 
 ## Test Results
 
@@ -42,3 +46,6 @@ Implementation complete; device validation pending.
   Phase 0 complete.
 - Phase 1: implementation complete 2026-09-07 (`0.2.0-phase1`); device
   validation pending.
+- Phase 1 Round 1 (BLOCKED, not a code failure): "Restricted setting" dialog
+  when enabling the service. Awaiting tester to grant "Allow restricted
+  settings" and re-run the enable + gesture test.
