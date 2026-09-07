@@ -39,5 +39,23 @@ object ProbeState {
     @Volatile var lastActivationSource: String? = null
     @Volatile var lastActivationTimeMillis: Long = 0L
     @Volatile var lastSelection: String? = null
+    @Volatile var selectionBounds: android.graphics.RectF? = null
     @Volatile var lastCapture: String? = null
+    @Volatile var lastCrop: String? = null
+}
+
+/**
+ * Phase 5 in-memory crop for the next phase. Single slot: replacing the
+ * crop recycles the previous bitmap. Survives nothing — process death
+ * drops it (files on disk remain).
+ */
+object CropHolder {
+    @Volatile var cropped: android.graphics.Bitmap? = null
+        private set
+
+    @Synchronized
+    fun replace(next: android.graphics.Bitmap?) {
+        cropped?.recycle()
+        cropped = next
+    }
 }

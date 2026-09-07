@@ -20,11 +20,13 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.SystemClock
 import android.provider.MediaStore
+import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Toast
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import kotlin.math.ceil
 
 /**
  * Phase 4 capture worker. Android requires `getMediaProjection` (targetSdk
@@ -44,6 +46,9 @@ class CaptureService : Service() {
         private const val FRAME_WAIT_MS = 4000L
         private const val SETTLE_MS = 600L
         private const val SKIP_FRAMES = 2
+        /** Padding added on each side of the selection bounds (configurable). */
+        private const val PADDING_DP = 32
+        private const val MIN_CROP_PX = 16
     }
 
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -117,7 +122,7 @@ class CaptureService : Service() {
         // very first frames risks transition/placeholder (black) buffers.
         Thread.sleep(SETTLE_MS)
         try {
-            val saved = grabFrame(reader, width, height)
+            val saved = grabFrame(reader, width, height, density)
             if (saved != null) {
                 val gallery = savePublicCopy(saved)
                 val info = "${saved.name} ${width}x$height ${saved.length() / 1024}KB" +
@@ -147,7 +152,7 @@ class CaptureService : Service() {
         }
     }
 
-    private fun grabFrame(reader: ImageReader, width: Int, height: Int): File? {
+    private fun grabFrame(reader: ImageReader, width: Int, height: Int, densityDpi: Int): File? {
         val deadline = SystemClock.uptimeMillis() + FRAME_WAIT_MS
         var skipped = 0
         var seen = 0
@@ -180,6 +185,7 @@ class CaptureService : Service() {
         }
         Log.i(Activation.TAG, "frames seen=$seen skipped=$skipped usedBlank=$bestBlank")
         val bmp = best ?: return null
+        cropSelection(bmp, densityDpi)
         val dir = File(filesDir, "captures").apply { mkdirs() }
         val out = File(dir, "capture_${System.currentTimeMillis()}.png")
         FileOutputStream(out).use { stream -> bmp.compress(Bitmap.CompressFormat.PNG, 100, stream) }
@@ -218,6 +224,48 @@ class CaptureService : Service() {
             y += stepY
         }
         return true
+    }
+
+    /**
+     * Phase 5: crop the selection (+ padding, clamped to the frame) and retain
+     * it in memory for the next phase. Never throws: invalid or tiny regions
+     * are skipped with a log. Debug copies land next to the captures.
+     */
+    private fun cropSelection(full: Bitmap, densityDpi: Int) {
+        val bounds = ProbeState.selectionBounds
+        if (bounds == null || bounds.isEmpty) {
+            Log.i(Activation.TAG, "crop skipped: no selection bounds")
+            CropHolder.replace(null)
+            return
+        }
+        try {
+            val padPx = PADDING_DP * densityDpi / DisplayMetrics.DENSITY_DEFAULT.toFloat()
+            val left = (bounds.left - padPx).toInt().coerceIn(0, full.width)
+            val top = (bounds.top - padPx).toInt().coerceIn(0, full.height)
+            val right = ceil(bounds.right + padPx).toInt().coerceIn(0, full.width)
+            val bottom = ceil(bounds.bottom + padPx).toInt().coerceIn(0, full.height)
+            val cw = right - left
+            val ch = bottom - top
+            if (cw < MIN_CROP_PX || ch < MIN_CROP_PX) {
+                Log.i(Activation.TAG, "crop skipped: clamped region too small ${cw}x$ch")
+                CropHolder.replace(null)
+                return
+            }
+            val cropped = Bitmap.createBitmap(full, left, top, cw, ch)
+            CropHolder.replace(cropped)
+            val dir = File(filesDir, "captures").apply { mkdirs() }
+            val out = File(dir, "crop_${System.currentTimeMillis()}.png")
+            FileOutputStream(out).use { stream ->
+                cropped.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            }
+            val gallery = savePublicCopy(out)
+            val info = "${out.name} ${cw}x$ch" + if (gallery) " + gallery" else ""
+            ProbeState.lastCrop = info
+            Log.i(Activation.TAG, "cropped: $info from bounds $bounds")
+        } catch (e: Exception) {
+            Log.w(Activation.TAG, "crop failed: $e")
+            CropHolder.replace(null)
+        }
     }
 
     /**

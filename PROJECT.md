@@ -5,12 +5,13 @@ Circle-to-Search-style experience.
 
 Target UX: ACTIVATE → CIRCLE → SEARCH
 
-## Architecture (as of Phase 4)
+## Architecture (as of Phase 5)
 
-Single-module native Android app. Tile tap → `Activation` → translucent
-`OverlayActivity` (separate task) → Confirm hides the UI, takes the system
-MediaProjection consent, captures one frame to app-private storage.
-Zero permissions, zero dependencies.
+Single-module native Android app. Tile → overlay → Confirm stores numeric
+`RectF` → consent → `CaptureService` crops the settled frame (bounds +
+32dp padding, clamped, min 16px) and retains it in `CropHolder` memory +
+`crop_<ts>.png` (private + gallery). Zero permissions beyond the two
+auto-granted FGS ones; zero dependencies; no search of any kind.
 
 - `OverlayActivity.kt` — overlay + consent (`createScreenCaptureIntent`) +
   hands the grant to `CaptureService`; deny restores the overlay.
@@ -93,6 +94,7 @@ activation).
   circle UI (separate task) with Cancel/Confirm; bounds logged on confirm.
 - Phase 4: SCREEN CAPTURE (done) — MediaProjection consent + one settled
   frame to app-private PNG + gallery copy; noHistory/no-task bugs fixed.
-- Future phases (not implemented): region cropping, visual search, results
-  presentation. Each phase is specified and device-validated separately
-  per AGENTS.md.
+- Phase 5: CIRCLE → IMAGE (current) — selection bounds + padding → clamped
+  crop retained in memory + debug files; tester validates before closure.
+- Future phases (not implemented): visual search, results presentation.
+  Each phase is specified and device-validated separately per AGENTS.md.

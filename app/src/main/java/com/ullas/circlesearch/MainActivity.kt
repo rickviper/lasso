@@ -39,6 +39,7 @@ class MainActivity : Activity() {
         out.appendLine("Last activation: $last")
         out.appendLine("Last selection: ${ProbeState.lastSelection ?: "(none yet)"}")
         out.appendLine("Last capture: ${ProbeState.lastCapture ?: "(none yet)"}")
+        out.appendLine("Last crop: ${ProbeState.lastCrop ?: "(none yet)"}")
         // On-disk truth: survives process death, unlike in-memory counters.
         val capturesDir = File(filesDir, "captures").apply { mkdirs() }
         val latest = capturesDir.listFiles()?.maxByOrNull { it.lastModified() }

@@ -60,6 +60,7 @@ class OverlayActivity : Activity() {
         val text = "left=${bounds.left.toInt()} top=${bounds.top.toInt()} " +
             "right=${bounds.right.toInt()} bottom=${bounds.bottom.toInt()}"
         ProbeState.lastSelection = text
+        ProbeState.selectionBounds = android.graphics.RectF(bounds)
         Log.i(Activation.TAG, "selection confirmed: $text")
         // Hide our UI so the capture contains only the underlying app.
         rootView.visibility = View.GONE
