@@ -20,9 +20,12 @@ class ProbeTile : TileService() {
     override fun onClick() {
         super.onClick()
         Activation.trigger(this, Activation.SOURCE_TILE)
-        // Collapse QS into the selection overlay (Phase 3).
+        // Fresh overlay task every tap: never resurrect a stale task, never
+        // join the dashboard task (MIUI otherwise foregrounds it).
         startActivityAndCollapse(
-            Intent(this, OverlayActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            Intent(this, OverlayActivity::class.java).addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            )
         )
     }
 }

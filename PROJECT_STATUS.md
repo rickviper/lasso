@@ -7,7 +7,7 @@ device validation pending. NOT complete until tester confirms.
 
 ## Phase 4 Acceptance Criteria
 
-- [x] `./gradlew assembleDebug` succeeds (`0.7.2-phase4`, versionCode 9).
+- [x] `./gradlew assembleDebug` succeeds (`0.7.3-phase4`, versionCode 10).
 - [ ] APK installs on the Xiaomi 11i.
 - [ ] Phase 3 overlay still works (draw, persistent stroke, Cancel, back).
 - [ ] Confirm with a circle → overlay hides → system screen-cast consent
@@ -39,6 +39,17 @@ device validation pending. NOT complete until tester confirms.
   both auto-granted normal permissions); overlay hands the consent result
   to it and finishes; capture runs there, then the service stops. Consent
   flow itself is unchanged and legitimate.
+- Round 3 (FAIL): capture itself works and the PNG generates fine, BUT the
+  phone lands on the Circle Search dashboard instead of staying on the
+  foreground app. Cause under investigation — need timing + PNG content to
+  distinguish task-reorder-before-capture from task-switch-after-capture.
+- Round 3 refined (tester answers): dashboard appears immediately at tile
+  tap, and the pulled PNG SHOWS THE DASHBOARD. So the overlay joins/is
+  layered over our own task and captures it — the tile launch foregrounds
+  our main task around the consent interlude on MIUI. Fix (`0.7.3-phase4`,
+  v10): `MainActivity noHistory` (dashboard never lingers as a competing
+  task) + tile launches overlay with `NEW_TASK | CLEAR_TASK` (always a fresh
+  overlay task, never joins/resurrects another). Nothing else changed.
 
 ## Phase 3 Acceptance Criteria
 
