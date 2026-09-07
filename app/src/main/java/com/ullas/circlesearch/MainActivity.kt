@@ -37,6 +37,7 @@ class MainActivity : Activity() {
     private fun refresh() {
         val out = StringBuilder()
         out.appendLine("Service enabled: ${isServiceEnabled()}")
+        out.appendLine("Service bound this session: ${ProbeState.serviceConnected}")
         val shortcut = ProbeState.activationCounts[Activation.SOURCE_SHORTCUT] ?: 0
         val tile = ProbeState.activationCounts[Activation.SOURCE_TILE] ?: 0
         out.appendLine("Activations via shortcut: $shortcut")

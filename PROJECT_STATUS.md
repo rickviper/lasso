@@ -9,14 +9,16 @@ device validation pending. NOT complete until tester confirms.
 
 - [x] `./gradlew assembleDebug` succeeds (`0.4.0-phase2`, versionCode 4).
 - [ ] APK installs on the Xiaomi 11i (reinstall over 0.3.0).
-- [ ] Shortcut tap while another app is foreground → Toast
-  "Circle Search activated (accessibility-shortcut)" + shortcut count +1.
-- [ ] QS tile tap → Toast "Circle Search activated (quick-settings-tile)"
-  + tile count +1, app dashboard opens.
+- [ ] Shortcut tap while another app is foreground → shortcut count +1
+  (Toast appears only when our app is open/foreground — MIUI suppresses
+  background toasts; counts + log are ground truth, not the toast).
+- [ ] QS tile tap → tile count +1, app dashboard opens.
 - [ ] Both triggers route through the single `Activation.trigger` function
   (verified in code; one log line `activated via <source>` each).
 - [ ] No overlay, capture, cropping, search, or Lens code present.
 - [ ] Human tester explicitly confirms pass.
+
+## Phase 2 Test Rounds (0.4.0+guard)
 
 ## Phase 2 Test Rounds (0.4.0)
 
@@ -32,6 +34,15 @@ device validation pending. NOT complete until tester confirms.
   restrictions. Fix 2026-09-07: toast wrapped in try/catch (feedback can never
   kill the service); counts + log remain ground truth. Rebuilt, retest pending
   with service toggle + battery steps below.
+- Round 2 (guard verified): fresh install, both toasts + counts work with app
+  open. Over a foreground app: no toast but BOTH counts increment — guard
+  holds, service survives. New finding: after swiping the app away and
+  reopening, tile works but shortcut doesn't. Diagnosis: environment-related
+  (MIUI force-kill; tile self-revives on demand, the a11y service doesn't
+  rebind by itself). Dashboard now shows "Service bound this session" to
+  distinguish settings-flag-true from actually-bound. Fix direction is MIUI
+  user settings (Autostart, Battery No restrictions, lock app in recents),
+  not code.
 
 ## Completed Phases
 
