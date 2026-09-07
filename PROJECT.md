@@ -5,7 +5,19 @@ Circle-to-Search-style experience.
 
 Target UX: ACTIVATE → CIRCLE → SEARCH
 
-## Architecture (as of Phase 1)
+## Architecture (as of Phase 2)
+
+Single-module native Android app. Phase 2 adds minimal activation-mechanism
+probes only (no capture, overlay selection, search, or production UI).
+
+- `GestureService.kt` — Phase 1 fingerprint probe (closed: NOT AVAILABLE) +
+  Phase 2 probes: system-wide volume-key observation via `onKeyEvent`
+  (never consumes; counts VOL_DOWN double-press) and accessibility-button
+  clicks via `AccessibilityButtonController` (`flagRequestAccessibilityButton`).
+- `ProbeTile.kt` — `TileService` probe (tap count + opens app).
+- `OverlayService.kt` — foreground-service floating-dot probe (tap count +
+  opens app; `TYPE_APPLICATION_OVERLAY`, `specialUse` FGS type).
+- `MainActivity.kt` — probe dashboard for all states + overlay-permission flow.
 
 Single-module native Android app. No backend, no libraries, no capture,
 no overlay, no search yet.
@@ -47,7 +59,9 @@ activation).
 ## Roadmap
 
 - Phase 0: scaffold + debug APK installs/launches on Xiaomi 11i (done).
-- Phase 1: fingerprint-gesture feasibility probe (current).
+- Phase 1: fingerprint-gesture feasibility probe (closed: NOT AVAILABLE).
+- Phase 2: activation mechanism investigation (current) — tester chooses the
+  mechanism before further development.
 - Future phases (not implemented): activation trigger, overlay selection UI,
   region extraction, visual search, results presentation. Each phase is
   specified and device-validated separately per AGENTS.md.

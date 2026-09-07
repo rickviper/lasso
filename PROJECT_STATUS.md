@@ -2,14 +2,18 @@
 
 ## Current Phase
 
-Phase 1 — fingerprint-gesture feasibility probe on Xiaomi 11i / Android 13.
-Implementation complete; device validation pending.
+Phase 2 — activation mechanism investigation (no bypasses; tester chooses the
+mechanism before any further development).
 
 ## Completed Phases
 
 - Phase 0 — minimum viable Android project: scaffold builds, installs, and
   launches on the Xiaomi 11i showing the full "Circle Search / Phase 0 —
   project scaffold OK" UI (incl. large-font clipping fix, commit a86db9c).
+- Phase 1 — CLOSED with negative verdict (tester-confirmed 2026-09-07):
+  Xiaomi 11i does not expose fingerprint gestures (`NOT AVAILABLE`).
+  Fingerprint swipe is ruled out as the ACTIVATE trigger. No checkpoint tag
+  (phase did not pass); result recorded as a finding, not a feature.
 
 ## Phase 1 Acceptance Criteria
 
@@ -55,3 +59,9 @@ Implementation complete; device validation pending.
   with its side-mounted (power-button) sensor, which does not support swipe
   gestures. No swipe testing applies. Awaiting explicit tester confirmation
   to close Phase 1.
+- Phase 1 closed 2026-09-07 on tester verdict ("Phase 1 has failed"):
+  fingerprint gestures unavailable, no bypass attempted. Finding recorded in
+  PROJECT.md.
+- Phase 2: activation probes built 2026-09-07 (`0.3.0-phase2`, versionCode 3):
+  volume-key observation, a11y-button callback, QS tile, overlay dot. Device
+  validation pending; tester chooses mechanism before further development.

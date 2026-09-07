@@ -1,23 +1,23 @@
 package com.ullas.circlesearch
 
 import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.AccessibilityButtonController
 import android.accessibilityservice.FingerprintGestureController
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 
 /**
- * Phase 1 feasibility probe: exposes whether the device offers fingerprint
- * swipe gestures to an AccessibilityService, and reports detected gestures.
- *
- * Results are stored in [ProbeState] (read by MainActivity) and logged with
- * tag [TAG] for `adb logcat` inspection.
+ * Phase 1 fingerprint probe + Phase 2 activation probes (volume keys,
+ * accessibility button). All probes observe only and log with tag [TAG].
  */
 class GestureService : AccessibilityService() {
 
     companion object {
         const val TAG = "CircleSearchProbe"
+        const val DOUBLE_PRESS_WINDOW_MS = 600L
     }
 
     private val gestureCallback = object : FingerprintGestureController.FingerprintGestureCallback() {
@@ -37,6 +37,23 @@ class GestureService : AccessibilityService() {
         }
     }
 
+    private val buttonCallback = object : AccessibilityButtonController.AccessibilityButtonCallback() {
+        override fun onClicked(controller: AccessibilityButtonController) {
+            super.onClicked(controller)
+            ProbeState.a11yButtonClicks++
+            Log.i(TAG, "accessibility button clicked count=${ProbeState.a11yButtonClicks}")
+        }
+
+        override fun onAvailabilityChanged(controller: AccessibilityButtonController, available: Boolean) {
+            super.onAvailabilityChanged(controller, available)
+            ProbeState.a11yButtonAvailable = available
+            Log.i(TAG, "accessibility button availability: $available")
+        }
+    }
+
+    private var lastVolumeDownMs = 0L
+    private val mainHandler = Handler(Looper.getMainLooper())
+
     override fun onServiceConnected() {
         super.onServiceConnected()
         ProbeState.serviceConnected = true
@@ -45,12 +62,42 @@ class GestureService : AccessibilityService() {
         ProbeState.gesturesAvailable = available
         Log.i(TAG, "service connected: controllerPresent=${controller != null}, available=$available")
         if (available && controller != null) {
-            controller.registerFingerprintGestureCallback(
-                gestureCallback,
-                Handler(Looper.getMainLooper())
-            )
+            controller.registerFingerprintGestureCallback(gestureCallback, mainHandler)
             Log.i(TAG, "gesture callback registered")
         }
+        val buttonController = accessibilityButtonController
+        ProbeState.a11yButtonAvailable = buttonController.isAccessibilityButtonAvailable
+        buttonController.registerAccessibilityButtonCallback(buttonCallback, mainHandler)
+        Log.i(TAG, "button callback registered, buttonAvailable=${ProbeState.a11yButtonAvailable}")
+    }
+
+    /**
+     * Phase 2 volume probe: observes volume keys system-wide. Never consumes
+     * events (zero interference); detects VOL_DOWN double-press.
+     */
+    override fun onKeyEvent(event: KeyEvent): Boolean {
+        val name = when (event.keyCode) {
+            KeyEvent.KEYCODE_VOLUME_DOWN -> "VOLUME_DOWN"
+            KeyEvent.KEYCODE_VOLUME_UP -> "VOLUME_UP"
+            else -> null
+        }
+        if (name != null) {
+            val action = if (event.action == KeyEvent.ACTION_DOWN) "DOWN" else "UP"
+            ProbeState.lastVolumeKey = "$name $action repeat=${event.repeatCount}"
+            ProbeState.lastVolumeTimeMillis = System.currentTimeMillis()
+            Log.i(TAG, "key event: $name $action repeat=${event.repeatCount}")
+            if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN &&
+                event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0
+            ) {
+                val now = System.currentTimeMillis()
+                if (now - lastVolumeDownMs <= DOUBLE_PRESS_WINDOW_MS) {
+                    ProbeState.volumeDoublePressCount++
+                    Log.i(TAG, "volume double-press detected count=${ProbeState.volumeDoublePressCount}")
+                }
+                lastVolumeDownMs = now
+            }
+        }
+        return super.onKeyEvent(event)
     }
 
     override fun onUnbind(intent: android.content.Intent?): Boolean {
@@ -60,12 +107,17 @@ class GestureService : AccessibilityService() {
         } catch (e: Exception) {
             Log.w(TAG, "unregister failed: $e")
         }
+        try {
+            accessibilityButtonController.unregisterAccessibilityButtonCallback(buttonCallback)
+        } catch (e: Exception) {
+            Log.w(TAG, "button unregister failed: $e")
+        }
         Log.i(TAG, "service disconnected")
         return super.onUnbind(intent)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        // Not used: this service exists only for the fingerprint-gesture probe.
+        // Not used: this service exists only for the hardware/gesture probes.
     }
 
     override fun onInterrupt() {
@@ -81,7 +133,7 @@ class GestureService : AccessibilityService() {
     }
 }
 
-/** Latest probe results. Written by [GestureService], read by MainActivity. */
+/** Latest probe results. Written by probes, read by MainActivity. */
 object ProbeState {
     @Volatile var serviceConnected: Boolean = false
 
@@ -91,4 +143,16 @@ object ProbeState {
     @Volatile var lastGesture: String? = null
     @Volatile var lastGestureTimeMillis: Long = 0L
     val gestureCounts: MutableMap<String, Int> = mutableMapOf()
+
+    @Volatile var lastVolumeKey: String? = null
+    @Volatile var lastVolumeTimeMillis: Long = 0L
+    @Volatile var volumeDoublePressCount: Int = 0
+
+    @Volatile var a11yButtonAvailable: Boolean? = null
+    @Volatile var a11yButtonClicks: Int = 0
+
+    @Volatile var tileClicks: Int = 0
+
+    @Volatile var overlayShown: Boolean = false
+    @Volatile var overlayTaps: Int = 0
 }

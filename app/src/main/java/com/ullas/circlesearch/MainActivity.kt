@@ -3,6 +3,7 @@ package com.ullas.circlesearch
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Button
@@ -11,10 +12,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-/** Phase 1 probe screen: shows GestureService status and detected gestures. */
+/** Phase 2 probe screen: shows all activation-probe states. */
 class MainActivity : Activity() {
 
     private lateinit var statusView: TextView
+    private val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.US)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +28,19 @@ class MainActivity : Activity() {
         findViewById<Button>(R.id.btn_refresh).setOnClickListener {
             refresh()
         }
+        findViewById<Button>(R.id.btn_show_dot).setOnClickListener {
+            if (Settings.canDrawOverlays(this)) {
+                startForegroundService(Intent(this, OverlayService::class.java))
+            } else {
+                startActivity(
+                    Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:$packageName")
+                    )
+                )
+            }
+            refresh()
+        }
     }
 
     override fun onResume() {
@@ -34,23 +49,38 @@ class MainActivity : Activity() {
     }
 
     private fun refresh() {
+        val out = StringBuilder()
         val enabled = isServiceEnabled()
+        out.appendLine("Service enabled: $enabled")
+
         val availability = ProbeState.gesturesAvailable
-        val availabilityText = when {
-            !enabled && availability == null -> "UNKNOWN (enable the service first)"
-            availability == null -> "UNKNOWN (service not connected yet)"
-            availability -> "AVAILABLE"
-            else -> "NOT AVAILABLE on this device"
-        }
-        val counts = listOf("SWIPE_LEFT", "SWIPE_RIGHT", "SWIPE_UP", "SWIPE_DOWN")
-            .joinToString("\n") { name -> "  $name: ${ProbeState.gestureCounts[name] ?: 0}" }
-        val last = ProbeState.lastGesture?.let { name ->
-            val time = SimpleDateFormat("HH:mm:ss", Locale.US).format(Date(ProbeState.lastGestureTimeMillis))
-            "$name at $time"
-        } ?: "(none yet)"
-        statusView.text = getString(
-            R.string.probe_status_template, enabled, availabilityText, last, counts
+        out.appendLine(
+            "Fingerprint gestures: " + when {
+                !enabled && availability == null -> "UNKNOWN (enable the service first)"
+                availability == null -> "UNKNOWN (service not connected yet)"
+                availability -> "AVAILABLE"
+                else -> "NOT AVAILABLE on this device"
+            }
         )
+
+        val lastVol = ProbeState.lastVolumeKey?.let { key ->
+            "$key at ${timeFormat.format(Date(ProbeState.lastVolumeTimeMillis))}"
+        } ?: "(none yet)"
+        out.appendLine("Volume key: $lastVol")
+        out.appendLine("VOL_DOWN double-press: ${ProbeState.volumeDoublePressCount}")
+
+        val btnAvail = when (ProbeState.a11yButtonAvailable) {
+            null -> "UNKNOWN"
+            true -> "AVAILABLE"
+            false -> "NOT AVAILABLE"
+        }
+        out.appendLine("A11y button: $btnAvail, clicks=${ProbeState.a11yButtonClicks}")
+        out.appendLine("QS tile taps: ${ProbeState.tileClicks}")
+        out.appendLine(
+            "Overlay: permitted=${Settings.canDrawOverlays(this)}, " +
+                "shown=${ProbeState.overlayShown}, taps=${ProbeState.overlayTaps}"
+        )
+        statusView.text = out.toString().trimEnd()
     }
 
     private fun isServiceEnabled(): Boolean {
