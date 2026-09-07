@@ -5,29 +5,24 @@ Circle-to-Search-style experience.
 
 Target UX: ACTIVATE → CIRCLE → SEARCH
 
-## Architecture (as of Phase 2 completion spec)
+## Architecture (as of Phase 2 tile-only)
 
-Single-module native Android app. Both triggers call one centralized
-`Activation.trigger(context, source)` (log + per-source count + Toast; no
-overlay, capture, cropping, or search).
+Single-module native Android app. The Quick Settings tile is the sole
+trigger and calls centralized `Activation.trigger` (log + count +
+best-effort Toast; no overlay, capture, cropping, or search).
 
-- `Activation.kt` — the single activation function both triggers call.
-- `GestureService.kt` — primary trigger: accessibility-shortcut taps via
-  `AccessibilityButtonController` → `Activation`; keeps the Phase 1
-  fingerprint-availability readout. No event processing, no key observation.
-- `ProbeTile.kt` — secondary trigger: `TileService.onClick` → `Activation`,
-  then collapses QS into the dashboard.
-- `MainActivity.kt` — dashboard: service state, per-source activation counts,
-  last activation.
-- Dropped and removed: volume-key observer, overlay dot service + permissions.
+- `Activation.kt` — centralized trigger + `ProbeState` counts.
+- `ProbeTile.kt` — `TileService.onClick` → `Activation`, then collapses QS
+  into the dashboard.
+- `MainActivity.kt` — dashboard: tile activation count, last activation.
+- No permissions. No accessibility service (dropped with the shortcut).
+- Dropped and removed: fingerprint/volume/power/overlay/shortcut paths.
 
 - `app/` — sole Android application module.
-  - `src/main/AndroidManifest.xml` — LAUNCHER `MainActivity`, `GestureService`
-    (bound with `BIND_ACCESSIBILITY_SERVICE`), `ProbeTile` (bound with
-    `BIND_QUICK_SETTINGS_TILE`). No special permissions.
+  - `src/main/AndroidManifest.xml` — LAUNCHER `MainActivity` + `ProbeTile`
+    (bound with `BIND_QUICK_SETTINGS_TILE`). No permissions requested.
   - `src/main/res/` — `layout/activity_main.xml`, `values/strings.xml`,
-    `xml/accessibilityservice.xml` (`flagRequestAccessibilityButton` +
-    `canRequestFingerprintGestures`), `drawable/ic_trigger_dot.xml` (tile icon).
+    `drawable/ic_trigger_dot.xml` (tile icon).
 - Root Gradle files: `settings.gradle`, `build.gradle`, `gradle.properties`,
   Gradle wrapper (`gradlew`, `gradle/wrapper/`).
 
@@ -52,11 +47,15 @@ activation).
 - Overlay dot: never appeared despite permission granted — unproven on MIUI,
   deprioritized.
 
-## Chosen Activation (tester decision 2026-09-07, option c)
+## Chosen Activation (tester decision 2026-09-07, revised same day)
 
-- Primary: accessibility shortcut/button (proven: 49 probe clicks).
-- Fallback: Quick Settings tile (proven: 2 probe taps).
-- Dropped: volume keys, power button, fingerprint gestures, overlay dot.
+- Sole trigger: Quick Settings tile (proven across installs and reboots).
+- Accessibility shortcut DITCHED on tester instruction: MIUI does not rebind
+  the service after the app process is killed (`enabled: true` but bound
+  `false` despite No-restrictions battery, locked app, no autostart option).
+  Service and all a11y code removed.
+- Dropped: fingerprint gestures, volume keys, power button, overlay dot,
+  accessibility shortcut.
 
 ## Toolchain (Phase 0)
 

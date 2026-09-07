@@ -14,17 +14,6 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".GestureService"
-            android:exported="true"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/accessibilityservice" />
-        </service>
-        <service
             android:name=".ProbeTile"
             android:exported="true"
             android:icon="@drawable/ic_trigger_dot"

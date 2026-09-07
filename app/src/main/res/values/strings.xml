@@ -2,9 +2,7 @@
 <resources>
     <string name="app_name">Circle Search</string>
     <string name="phase_label">Phase 2 — global trigger</string>
-    <string name="accessibility_service_description">Circle Search trigger: tapping the accessibility shortcut activates Circle Search. No screen content is read.</string>
     <string name="probe_status_placeholder">Loading status…</string>
     <string name="tile_label">Circle Search</string>
-    <string name="btn_open_settings">Open accessibility settings</string>
     <string name="btn_refresh">Refresh status</string>
 </resources>

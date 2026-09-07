@@ -5,17 +5,14 @@
 Phase 2 — GLOBAL TRIGGER. Implementation complete (`0.4.0-phase2`);
 device validation pending. NOT complete until tester confirms.
 
-## Phase 2 Acceptance Criteria
+## Phase 2 Acceptance Criteria (tile-only, revised 2026-09-07)
 
-- [x] `./gradlew assembleDebug` succeeds (`0.4.0-phase2`, versionCode 4).
-- [ ] APK installs on the Xiaomi 11i (reinstall over 0.3.0).
-- [ ] Shortcut tap while another app is foreground → shortcut count +1
-  (Toast appears only when our app is open/foreground — MIUI suppresses
-  background toasts; counts + log are ground truth, not the toast).
-- [ ] QS tile tap → tile count +1, app dashboard opens.
-- [ ] Both triggers route through the single `Activation.trigger` function
-  (verified in code; one log line `activated via <source>` each).
-- [ ] No overlay, capture, cropping, search, or Lens code present.
+- [x] `./gradlew assembleDebug` succeeds (`0.5.0-phase2`, versionCode 5).
+- [ ] APK installs on the Xiaomi 11i.
+- [ ] QS tile tap from any foreground app → tile count +1, dashboard opens.
+- [ ] Counts + log (`activated via quick-settings-tile`) are ground truth;
+  toast is best-effort only (MIUI suppresses background toasts).
+- [ ] No accessibility service, overlay, capture, cropping, search, or Lens code.
 - [ ] Human tester explicitly confirms pass.
 
 ## Phase 2 Test Rounds (0.4.0+guard)
@@ -43,6 +40,12 @@ device validation pending. NOT complete until tester confirms.
   distinguish settings-flag-true from actually-bound. Fix direction is MIUI
   user settings (Autostart, Battery No restrictions, lock app in recents),
   not code.
+- Round 3 (tester decision 2026-09-07): shortcut DITCHED — after swipe-kill +
+  reopen, `enabled: true` but bound `false` despite No-restrictions battery
+  and locked app (no autostart option on this build). Tile-only from here:
+  `0.5.0-phase2` removes GestureService, a11y config, and overlay/FGS
+  remnants. Tester should also disable the dead service entry in Settings →
+  Accessibility. Device validation pending.
 
 ## Completed Phases
 

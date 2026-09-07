@@ -4,17 +4,17 @@ import android.content.Intent
 import android.service.quicksettings.TileService
 import android.util.Log
 
-/** Phase 2 secondary trigger: Quick Settings tile calls [Activation]. */
+/** Phase 2 trigger: the Quick Settings tile calls [Activation]. */
 class ProbeTile : TileService() {
 
     override fun onTileAdded() {
         super.onTileAdded()
-        Log.i(GestureService.TAG, "tile added")
+        Log.i(Activation.TAG, "tile added")
     }
 
     override fun onTileRemoved() {
         super.onTileRemoved()
-        Log.i(GestureService.TAG, "tile removed")
+        Log.i(Activation.TAG, "tile removed")
     }
 
     override fun onClick() {
