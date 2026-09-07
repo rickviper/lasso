@@ -24,17 +24,18 @@ no overlay, no search yet.
     Accessibility Settings.
   - `src/main/res/` — `layout/activity_main.xml`, `values/strings.xml`,
     `xml/accessibilityservice.xml` (`canRequestFingerprintGestures="true"`).
-
-Single-module native Android app. No backend, no libraries, no services yet.
-
-- `app/` — sole Android application module.
-  - `src/main/AndroidManifest.xml` — manifest; single LAUNCHER `MainActivity`.
-  - `src/main/java/com/ullas/circlesearch/MainActivity.kt` — plain
-    `android.app.Activity`, sets the Phase 0 layout. No AppCompat/Material
-    dependency (uses the platform Material theme).
-  - `src/main/res/` — `layout/activity_main.xml`, `values/strings.xml`.
 - Root Gradle files: `settings.gradle`, `build.gradle`, `gradle.properties`,
   Gradle wrapper (`gradlew`, `gradle/wrapper/`).
+
+## Key Finding (Phase 1, device-verified 2026-09-07)
+
+The Xiaomi 11i does NOT expose fingerprint swipe gestures to third-party
+accessibility services (`FingerprintGestureController`
+reports not-available; consistent with its side-mounted power-button sensor,
+which supports no swipe gestures). Fingerprint-sensor swipe therefore cannot
+be the ACTIVATE trigger — a later phase must specify an alternative (e.g.
+accessibility shortcut/button, quick tile, floating trigger, or hardware-key
+activation).
 
 ## Toolchain (Phase 0)
 

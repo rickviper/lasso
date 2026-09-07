@@ -14,10 +14,12 @@ Implementation complete; device validation pending.
 ## Phase 1 Acceptance Criteria
 
 - [x] `./gradlew assembleDebug` succeeds (`0.2.0-phase1`, versionCode 2).
-- [ ] APK installs on the Xiaomi 11i.
-- [ ] Accessibility service can be enabled via system Settings.
-- [ ] Probe reports gesture availability (AVAILABLE or NOT AVAILABLE).
-- [ ] If AVAILABLE: each supported swipe direction is detected and shown/logged.
+- [x] APK installs on the Xiaomi 11i.
+- [x] Accessibility service can be enabled via system Settings (required the
+  Android 13 "Allow restricted settings" step for sideloaded apps; then enabled OK).
+- [x] Probe reports gesture availability (AVAILABLE or NOT AVAILABLE).
+- [x] If AVAILABLE: each supported swipe direction is detected and shown/logged.
+  (N/A — device reports NOT AVAILABLE, so no swipe test applies.)
 - [ ] Human tester explicitly confirms the result.
 
 ## Phase 0 Acceptance Criteria
@@ -29,11 +31,8 @@ Implementation complete; device validation pending.
 
 ## Current Blockers
 
-- Phase 1 Round 1: enabling the service shows "Restricted setting / For your
-  security, this setting is currently unavailable." Cause: environment-related
-  (Android 13 OS security, not code) — sideloaded apps (adb/APK install) are
-  blocked from accessibility access until the user grants "Allow restricted
-  settings" on the app info screen. No rebuild needed; tester action required.
+- None (previous "Restricted setting" blocker cleared via "Allow restricted
+  settings").
 
 ## Test Results
 
@@ -49,3 +48,10 @@ Implementation complete; device validation pending.
 - Phase 1 Round 1 (BLOCKED, not a code failure): "Restricted setting" dialog
   when enabling the service. Awaiting tester to grant "Allow restricted
   settings" and re-run the enable + gesture test.
+- Phase 1 Round 2 (DEVICE VERDICT): service enabled (`Service enabled: true`)
+  after granting "Allow restricted settings"; probe reports `Gestures: NOT
+  AVAILABLE on this device`, all swipe counters 0 (screenshot evidence).
+  FingerprintGestureController is not exposed on the Xiaomi 11i — consistent
+  with its side-mounted (power-button) sensor, which does not support swipe
+  gestures. No swipe testing applies. Awaiting explicit tester confirmation
+  to close Phase 1.
