@@ -5,6 +5,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.Bitmap
@@ -18,9 +19,11 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.SystemClock
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 
 /**
@@ -111,7 +114,9 @@ class CaptureService : Service() {
         try {
             val saved = grabFrame(reader, width, height)
             if (saved != null) {
-                val info = "${saved.name} ${width}x$height ${saved.length() / 1024}KB"
+                val gallery = savePublicCopy(saved)
+                val info = "${saved.name} ${width}x$height ${saved.length() / 1024}KB" +
+                    if (gallery) " + gallery" else ""
                 ProbeState.lastCapture = info
                 Log.i(Activation.TAG, "captured: $info")
                 toast("Captured: $info", long = true)
@@ -163,6 +168,36 @@ class CaptureService : Service() {
         FileOutputStream(out).use { stream -> bmp.compress(Bitmap.CompressFormat.PNG, 100, stream) }
         bmp.recycle()
         return out
+    }
+
+    /**
+     * Public copy in Pictures/CircleSearch so the capture is visible in the
+     * gallery and file managers. API 29+: no permission needed for our own
+     * files. The app-private PNG remains the next phase's source of truth.
+     */
+    private fun savePublicCopy(source: File): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            Log.w(Activation.TAG, "public copy skipped below API 29")
+            return false
+        }
+        return try {
+            val values = ContentValues().apply {
+                put(MediaStore.Images.Media.DISPLAY_NAME, source.name)
+                put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CircleSearch")
+            }
+            val uri = contentResolver.insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
+            ) ?: return false
+            contentResolver.openOutputStream(uri)?.use { out ->
+                FileInputStream(source).use { input -> input.copyTo(out) }
+            } ?: return false
+            Log.i(Activation.TAG, "gallery copy saved: $uri")
+            true
+        } catch (e: Exception) {
+            Log.w(Activation.TAG, "gallery copy failed: $e")
+            false
+        }
     }
 
     private fun toast(text: String, long: Boolean) {

@@ -7,7 +7,7 @@ device validation pending. NOT complete until tester confirms.
 
 ## Phase 4 Acceptance Criteria
 
-- [x] `./gradlew assembleDebug` succeeds (`0.7.3-phase4`, versionCode 10).
+- [x] `./gradlew assembleDebug` succeeds (`0.7.4-phase4`, versionCode 11).
 - [ ] APK installs on the Xiaomi 11i.
 - [ ] Phase 3 overlay still works (draw, persistent stroke, Cancel, back).
 - [ ] Confirm with a circle → overlay hides → system screen-cast consent
@@ -50,6 +50,14 @@ device validation pending. NOT complete until tester confirms.
   v10): `MainActivity noHistory` (dashboard never lingers as a competing
   task) + tile launches overlay with `NEW_TASK | CLEAR_TASK` (always a fresh
   overlay task, never joins/resurrects another). Nothing else changed.
+- Round 4 (FAIL, expectation gap): capture works — dashboard shows
+  `capture_….png 1080x2400 1944KB` and `Files on disk` confirms it — but the
+  tester expected the screenshot visible on the device. Cause: file lived in
+  app-private storage, invisible to gallery/file managers. Fix
+  (`0.7.4-phase4`, v11): also write a MediaStore copy to
+  Pictures/CircleSearch (no permission needed for own files on API 29+);
+  app-private PNG stays the next phase's source. Dashboard appends
+  "+ gallery" on success.
 
 ## Phase 3 Acceptance Criteria
 
