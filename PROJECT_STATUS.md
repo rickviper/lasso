@@ -65,3 +65,16 @@ mechanism before any further development).
 - Phase 2: activation probes built 2026-09-07 (`0.3.0-phase2`, versionCode 3):
   volume-key observation, a11y-button callback, QS tile, overlay dot. Device
   validation pending; tester chooses mechanism before further development.
+- Phase 2 Round 1 (DEVICE VERDICTS, screenshot evidence):
+  - Volume keys: FAIL — no key events reach `onKeyEvent` (`(none yet)`, count
+    0); keys just adjust volume. Ruled out on this MIUI build.
+  - A11y shortcut/button: PASS — 49 clicks registered via the floating
+    "Circle Search shortcut" button (per-service shortcut toggle exists in
+    Settings → Accessibility → Circle Search). Note: API availability flag
+    reads NOT AVAILABLE while clicks work — flag is cosmetic here, clicks are
+    the ground truth.
+  - QS tile: PASS — 2 taps, opens app.
+  - Overlay dot: FAIL/UNPROVEN — `permitted=true` but `shown=false`, no dot
+    seen. Suspected MIUI FGS/background kill (or API-33 `specialUse`-type
+    issue); needs logcat to diagnose. Lowest priority given two proven options.
+  - Awaiting tester choice of mechanism.

@@ -49,6 +49,17 @@ be the ACTIVATE trigger — a later phase must specify an alternative (e.g.
 accessibility shortcut/button, quick tile, floating trigger, or hardware-key
 activation).
 
+## Key Finding (Phase 2 Round 1, device-verified 2026-09-07)
+
+- Volume keys: NOT delivered to third-party accessibility services on this
+  MIUI build — ruled out.
+- Power button: not interceptable by third parties (analysis) — ruled out.
+- Accessibility shortcut/button: WORKS (49 probe clicks via the floating
+  shortcut button). Leading candidate.
+- Quick Settings tile: WORKS (2 probe taps). Solid fallback.
+- Overlay dot: never appeared despite permission granted — unproven on MIUI,
+  deprioritized.
+
 ## Toolchain (Phase 0)
 
 - AGP 8.5.2, Gradle 8.7 (wrapper), Kotlin 1.9.24
