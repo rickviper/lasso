@@ -2,21 +2,20 @@
 
 ## Current Phase
 
-Phase 3 — SELECTION OVERLAY. Implementation complete (`0.6.0-phase3`);
-device validation pending. NOT complete until tester confirms.
+Phase 3 complete (device-validated 2026-09-07). Awaiting Phase 4 instructions.
 
 ## Phase 3 Acceptance Criteria
 
 - [x] `./gradlew assembleDebug` succeeds (`0.6.0-phase3`, versionCode 6).
-- [ ] APK installs on the Xiaomi 11i.
-- [ ] Tile tap over a foreground app opens the dimmed fullscreen overlay.
-- [ ] Finger draws a smooth white freehand path that follows the touch.
-- [ ] Path stays visible after finger release; new touch starts a new selection.
-- [ ] Cancel removes the overlay immediately, returns to the foreground app.
-- [ ] Confirm with a drawn circle logs bounds, shows them, closes overlay;
+- [x] APK installs on the Xiaomi 11i.
+- [x] Tile tap over a foreground app opens the dimmed fullscreen overlay.
+- [x] Finger draws a smooth white freehand path that follows the touch.
+- [x] Path stays visible after finger release; new touch starts a new selection.
+- [x] Cancel removes the overlay immediately, returns to the foreground app.
+- [x] Confirm with a drawn circle logs bounds, shows them, closes overlay;
   dashboard shows last selection. Confirm with no drawing stays open.
-- [ ] No capture, cropping, search, Lens, networking, OCR, or AI code.
-- [ ] Human tester explicitly confirms pass.
+- [x] No capture, cropping, search, Lens, networking, OCR, or AI code.
+- [x] Human tester explicitly confirms pass.
 
 ## Phase 3 Test Rounds
 
@@ -26,6 +25,8 @@ device validation pending. NOT complete until tester confirms.
   task affinity, so `FLAG_ACTIVITY_NEW_TASK` joined the existing app task.
   Fix: `android:taskAffinity=""` (separate task layered above the foreground
   app). Rebuilt, same version, retest pending.
+- Round 2 (PASS): overlay appears over the foreground app; draw/cancel/
+  confirm all behave. Phase 3 complete.
 
 ## Phase 2 Acceptance Criteria (tile-only, revised 2026-09-07)
 

@@ -78,8 +78,8 @@ activation).
 - Phase 0: scaffold + debug APK installs/launches on Xiaomi 11i (done).
 - Phase 1: fingerprint-gesture feasibility probe (closed: NOT AVAILABLE).
 - Phase 2: GLOBAL TRIGGER (done) — QS tile wired to centralized `Activation`.
-- Phase 3: SELECTION OVERLAY (current) — fullscreen freehand circle UI with
-  Cancel/Confirm; tester validates on-device before closure.
+- Phase 3: SELECTION OVERLAY (done) — tile opens dimmed fullscreen freehand
+  circle UI (separate task) with Cancel/Confirm; bounds logged on confirm.
 - Future phases (not implemented): region extraction, visual search, results
   presentation. Each phase is specified and device-validated separately
   per AGENTS.md.
