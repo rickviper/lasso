@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Circle Search</string>
-    <string name="phase_label">Phase 0 — project scaffold OK</string>
+    <string name="phase_label">Phase 1 — fingerprint gesture probe</string>
+    <string name="accessibility_service_description">Circle Search probe: tests whether this device exposes fingerprint swipe gestures. No screen content is read.</string>
+    <string name="probe_status_placeholder">Loading probe status…</string>
+    <string name="probe_status_template">Service enabled: %1$b\nGestures: %2$s\nLast gesture: %3$s\nCounts:\n%4$s</string>
+    <string name="btn_open_settings">Open accessibility settings</string>
+    <string name="btn_refresh">Refresh status</string>
 </resources>

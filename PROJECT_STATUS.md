@@ -2,13 +2,23 @@
 
 ## Current Phase
 
-Phase 0 complete (device-validated 2026-09-07). Awaiting Phase 1 instructions.
+Phase 1 — fingerprint-gesture feasibility probe on Xiaomi 11i / Android 13.
+Implementation complete; device validation pending.
 
 ## Completed Phases
 
 - Phase 0 — minimum viable Android project: scaffold builds, installs, and
   launches on the Xiaomi 11i showing the full "Circle Search / Phase 0 —
   project scaffold OK" UI (incl. large-font clipping fix, commit a86db9c).
+
+## Phase 1 Acceptance Criteria
+
+- [x] `./gradlew assembleDebug` succeeds (`0.2.0-phase1`, versionCode 2).
+- [ ] APK installs on the Xiaomi 11i.
+- [ ] Accessibility service can be enabled via system Settings.
+- [ ] Probe reports gesture availability (AVAILABLE or NOT AVAILABLE).
+- [ ] If AVAILABLE: each supported swipe direction is detected and shown/logged.
+- [ ] Human tester explicitly confirms the result.
 
 ## Phase 0 Acceptance Criteria
 
@@ -30,3 +40,5 @@ Phase 0 complete (device-validated 2026-09-07). Awaiting Phase 1 instructions.
   `center_horizontal` gravity so text wraps. Rebuilt 2026-09-07, retest pending.
 - Round 2 (PASS): human tester confirmed full text visible on Xiaomi 11i.
   Phase 0 complete.
+- Phase 1: implementation complete 2026-09-07 (`0.2.0-phase1`); device
+  validation pending.
