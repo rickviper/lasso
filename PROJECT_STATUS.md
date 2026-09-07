@@ -8,12 +8,12 @@ device validation pending. NOT complete until tester confirms.
 ## Phase 2 Acceptance Criteria (tile-only, revised 2026-09-07)
 
 - [x] `./gradlew assembleDebug` succeeds (`0.5.0-phase2`, versionCode 5).
-- [ ] APK installs on the Xiaomi 11i.
-- [ ] QS tile tap from any foreground app → tile count +1, dashboard opens.
-- [ ] Counts + log (`activated via quick-settings-tile`) are ground truth;
+- [x] APK installs on the Xiaomi 11i.
+- [x] QS tile tap from any foreground app → tile count +1, dashboard opens.
+- [x] Counts + log (`activated via quick-settings-tile`) are ground truth;
   toast is best-effort only (MIUI suppresses background toasts).
-- [ ] No accessibility service, overlay, capture, cropping, search, or Lens code.
-- [ ] Human tester explicitly confirms pass.
+- [x] No accessibility service, overlay, capture, cropping, search, or Lens code.
+- [x] Human tester explicitly confirms pass.
 
 ## Phase 2 Test Rounds (0.4.0+guard)
 
@@ -45,7 +45,9 @@ device validation pending. NOT complete until tester confirms.
   and locked app (no autostart option on this build). Tile-only from here:
   `0.5.0-phase2` removes GestureService, a11y config, and overlay/FGS
   remnants. Tester should also disable the dead service entry in Settings →
-  Accessibility. Device validation pending.
+  Accessibility.
+- Phase 2 Round 4 (PASS): tester confirmed tile tap from foreground app
+  increments count and opens dashboard. Phase 2 complete.
 
 ## Completed Phases
 
@@ -56,6 +58,11 @@ device validation pending. NOT complete until tester confirms.
   Xiaomi 11i does not expose fingerprint gestures (`NOT AVAILABLE`).
   Fingerprint swipe is ruled out as the ACTIVATE trigger. No checkpoint tag
   (phase did not pass); result recorded as a finding, not a feature.
+- Phase 2 — GLOBAL TRIGGER, complete 2026-09-07 (tester-confirmed PASS):
+  Quick Settings tile is the sole trigger wired to centralized `Activation`
+  (`0.5.0-phase2`); tile tap from any foreground app increments the count
+  and opens the dashboard. Accessibility shortcut tried and dropped (MIUI
+  does not rebind the service after process kill).
 
 ## Phase 1 Acceptance Criteria
 
