@@ -2,8 +2,9 @@
 
 ## Current Phase
 
-Phase 2 — activation mechanism investigation (no bypasses; tester chooses the
-mechanism before any further development).
+Phase 2 — activation mechanism investigation IN PROGRESS (premature
+completion claim reverted 2026-09-07 on tester feedback; checkpoint commit
+undone).
 
 ## Completed Phases
 
@@ -62,6 +63,10 @@ mechanism before any further development).
 - Phase 1 closed 2026-09-07 on tester verdict ("Phase 1 has failed"):
   fingerprint gestures unavailable, no bypass attempted. Finding recorded in
   PROJECT.md.
+- Phase 2 — activation investigation, IN PROGRESS: all four probes
+  device-tested with verdicts (volume FAIL, a11y shortcut PASS, QS tile PASS,
+  overlay UNPROVEN). Tester chose option (c): accessibility shortcut primary
+  + QS tile fallback. Closure criteria still to be confirmed by tester.
 - Phase 2: activation probes built 2026-09-07 (`0.3.0-phase2`, versionCode 3):
   volume-key observation, a11y-button callback, QS tile, overlay dot. Device
   validation pending; tester chooses mechanism before further development.

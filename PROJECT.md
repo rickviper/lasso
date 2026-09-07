@@ -60,6 +60,12 @@ activation).
 - Overlay dot: never appeared despite permission granted — unproven on MIUI,
   deprioritized.
 
+## Chosen Activation (tester decision 2026-09-07, option c)
+
+- Primary: accessibility shortcut/button (proven: 49 probe clicks).
+- Fallback: Quick Settings tile (proven: 2 probe taps).
+- Dropped: volume keys, power button, fingerprint gestures, overlay dot.
+
 ## Toolchain (Phase 0)
 
 - AGP 8.5.2, Gradle 8.7 (wrapper), Kotlin 1.9.24
