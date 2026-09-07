@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
+import android.hardware.display.VirtualDisplay
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
@@ -119,14 +120,24 @@ class OverlayActivity : Activity() {
         val (width, height) = screenSize()
         val density = resources.displayMetrics.densityDpi
         val manager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        val reader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
-        val projection = manager.getMediaProjection(resultCode, data)
-        this.projection = projection
-        val display = projection.createVirtualDisplay(
-            "CircleSearchCapture", width, height, density,
-            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-            reader.surface, null, null
-        )
+        val reader: ImageReader
+        val projection: MediaProjection
+        val display: VirtualDisplay
+        try {
+            reader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
+            projection = manager.getMediaProjection(resultCode, data)
+            this.projection = projection
+            display = projection.createVirtualDisplay(
+                "CircleSearchCapture", width, height, density,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                reader.surface, null, null
+            )
+        } catch (e: Exception) {
+            Log.w(Activation.TAG, "capture setup failed: $e")
+            Toast.makeText(this, "Capture failed: $e", Toast.LENGTH_LONG).show()
+            rootView.visibility = View.VISIBLE
+            return
+        }
         Thread {
             var saved: File? = null
             try {

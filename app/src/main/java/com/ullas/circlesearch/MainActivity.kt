@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -38,6 +39,10 @@ class MainActivity : Activity() {
         out.appendLine("Last activation: $last")
         out.appendLine("Last selection: ${ProbeState.lastSelection ?: "(none yet)"}")
         out.appendLine("Last capture: ${ProbeState.lastCapture ?: "(none yet)"}")
+        // On-disk truth: survives process death, unlike in-memory counters.
+        val capturesDir = File(filesDir, "captures").apply { mkdirs() }
+        val latest = capturesDir.listFiles()?.maxByOrNull { it.lastModified() }
+        out.appendLine("Files on disk: ${latest?.let { "${it.name} ${it.length() / 1024}KB" } ?: "(none)"}")
         statusView.text = out.toString().trimEnd()
     }
 }

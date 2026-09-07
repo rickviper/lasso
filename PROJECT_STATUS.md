@@ -7,7 +7,7 @@ device validation pending. NOT complete until tester confirms.
 
 ## Phase 4 Acceptance Criteria
 
-- [x] `./gradlew assembleDebug` succeeds (`0.7.0-phase4`, versionCode 7).
+- [x] `./gradlew assembleDebug` succeeds (`0.7.1-phase4`, versionCode 8).
 - [ ] APK installs on the Xiaomi 11i.
 - [ ] Phase 3 overlay still works (draw, persistent stroke, Cancel, back).
 - [ ] Confirm with a circle → overlay hides → system screen-cast consent
@@ -18,6 +18,19 @@ device validation pending. NOT complete until tester confirms.
 - [ ] Pulled PNG shows the underlying app with NO overlay/dim artifacts.
 - [ ] No cropping, search, Lens, networking, OCR, or AI code.
 - [ ] Human tester explicitly confirms pass.
+
+## Phase 4 Test Rounds
+
+- Round 1 (FAIL): consent dialog appears, but tapping "Start now" kills the
+  flow — overlay vanishes, no capture, dashboard counters reset to zero.
+  Cause (code-related): `android:noHistory="true"` finished OverlayActivity
+  the moment the system consent activity came forward, so the result had no
+  recipient; later process death reset the in-memory counters (hence the
+  zeros — not a separate bug). Fix 2026-09-07 (`0.7.1-phase4`, v8): removed
+  `noHistory`; capture setup wrapped in try/catch (failure restores overlay
+  instead of dying); dashboard shows on-disk captures (survives process
+  death). If "Start now" still fails, logcat will now show the exact
+  exception via the `capture setup failed` / `capture failed` lines.
 
 ## Phase 3 Acceptance Criteria
 
