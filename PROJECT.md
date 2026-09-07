@@ -5,10 +5,19 @@ Circle-to-Search-style experience.
 
 Target UX: ACTIVATE → CIRCLE → SEARCH
 
-## Architecture (as of Phase 3)
+## Architecture (as of Phase 4)
 
 Single-module native Android app. Tile tap → `Activation` → translucent
-fullscreen `OverlayActivity` above the foreground app (zero permissions).
+`OverlayActivity` (separate task) → Confirm hides the UI, takes the system
+MediaProjection consent, captures one frame to app-private storage.
+Zero permissions, zero dependencies.
+
+- `OverlayActivity.kt` — overlay + consent (`createScreenCaptureIntent`) +
+  one-frame capture (`ImageReader` + `VirtualDisplay`, bg thread, 2s poll) →
+  PNG in `filesDir/captures/`; deny restores the overlay; projection always
+  stopped/released.
+- Rest unchanged: `Activation`/`ProbeState` (+ `lastCapture`), `ProbeTile`,
+  `SelectionView`, dashboard (+ last capture).
 
 - `Activation.kt` — centralized trigger + `ProbeState` (counts, last selection).
 - `ProbeTile.kt` — sole trigger: `TileService.onClick` → `Activation`, then
@@ -80,6 +89,8 @@ activation).
 - Phase 2: GLOBAL TRIGGER (done) — QS tile wired to centralized `Activation`.
 - Phase 3: SELECTION OVERLAY (done) — tile opens dimmed fullscreen freehand
   circle UI (separate task) with Cancel/Confirm; bounds logged on confirm.
-- Future phases (not implemented): region extraction, visual search, results
+- Phase 4: SCREEN CAPTURE (current) — MediaProjection consent + one frame to
+  app-private PNG; tester validates on-device before closure.
+- Future phases (not implemented): region cropping, visual search, results
   presentation. Each phase is specified and device-validated separately
   per AGENTS.md.

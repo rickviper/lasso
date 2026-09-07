@@ -2,7 +2,22 @@
 
 ## Current Phase
 
-Phase 3 complete (device-validated 2026-09-07). Awaiting Phase 4 instructions.
+Phase 4 — SCREEN CAPTURE. Implementation complete (`0.7.0-phase4`);
+device validation pending. NOT complete until tester confirms.
+
+## Phase 4 Acceptance Criteria
+
+- [x] `./gradlew assembleDebug` succeeds (`0.7.0-phase4`, versionCode 7).
+- [ ] APK installs on the Xiaomi 11i.
+- [ ] Phase 3 overlay still works (draw, persistent stroke, Cancel, back).
+- [ ] Confirm with a circle → overlay hides → system screen-cast consent
+  dialog appears (first run: allow it).
+- [ ] After consent: capture saved, dashboard shows
+  `Last capture: capture_<ts>.png <W>x<H> <N>KB`; overlay closes.
+- [ ] Denying consent restores the overlay (can Cancel/draw again).
+- [ ] Pulled PNG shows the underlying app with NO overlay/dim artifacts.
+- [ ] No cropping, search, Lens, networking, OCR, or AI code.
+- [ ] Human tester explicitly confirms pass.
 
 ## Phase 3 Acceptance Criteria
 

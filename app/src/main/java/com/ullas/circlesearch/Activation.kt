@@ -39,4 +39,5 @@ object ProbeState {
     @Volatile var lastActivationSource: String? = null
     @Volatile var lastActivationTimeMillis: Long = 0L
     @Volatile var lastSelection: String? = null
+    @Volatile var lastCapture: String? = null
 }

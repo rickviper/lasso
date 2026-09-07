@@ -37,6 +37,7 @@ class MainActivity : Activity() {
         } ?: "(none yet)"
         out.appendLine("Last activation: $last")
         out.appendLine("Last selection: ${ProbeState.lastSelection ?: "(none yet)"}")
+        out.appendLine("Last capture: ${ProbeState.lastCapture ?: "(none yet)"}")
         statusView.text = out.toString().trimEnd()
     }
 }

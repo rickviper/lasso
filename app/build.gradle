@@ -11,8 +11,8 @@ android {
         applicationId = "com.ullas.circlesearch"
         minSdk = 26
         targetSdk = 34
-        versionCode = 6
-        versionName = "0.6.0-phase3"
+        versionCode = 7
+        versionName = "0.7.0-phase4"
     }
 
     buildTypes {
