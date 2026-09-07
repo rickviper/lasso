@@ -91,8 +91,8 @@ activation).
 - Phase 2: GLOBAL TRIGGER (done) — QS tile wired to centralized `Activation`.
 - Phase 3: SELECTION OVERLAY (done) — tile opens dimmed fullscreen freehand
   circle UI (separate task) with Cancel/Confirm; bounds logged on confirm.
-- Phase 4: SCREEN CAPTURE (current) — MediaProjection consent + one frame to
-  app-private PNG; tester validates on-device before closure.
+- Phase 4: SCREEN CAPTURE (done) — MediaProjection consent + one settled
+  frame to app-private PNG + gallery copy; noHistory/no-task bugs fixed.
 - Future phases (not implemented): region cropping, visual search, results
   presentation. Each phase is specified and device-validated separately
   per AGENTS.md.

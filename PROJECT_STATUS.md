@@ -2,22 +2,21 @@
 
 ## Current Phase
 
-Phase 4 — SCREEN CAPTURE. Implementation complete (`0.7.0-phase4`);
-device validation pending. NOT complete until tester confirms.
+Phase 4 complete (device-validated 2026-09-07). Awaiting Phase 5 instructions.
 
 ## Phase 4 Acceptance Criteria
 
 - [x] `./gradlew assembleDebug` succeeds (`0.7.5-phase4`, versionCode 12).
-- [ ] APK installs on the Xiaomi 11i.
-- [ ] Phase 3 overlay still works (draw, persistent stroke, Cancel, back).
-- [ ] Confirm with a circle → overlay hides → system screen-cast consent
+- [x] APK installs on the Xiaomi 11i.
+- [x] Phase 3 overlay still works (draw, persistent stroke, Cancel, back).
+- [x] Confirm with a circle → overlay hides → system screen-cast consent
   dialog appears (first run: allow it).
-- [ ] After consent: capture saved, dashboard shows
+- [x] After consent: capture saved, dashboard shows
   `Last capture: capture_<ts>.png <W>x<H> <N>KB`; overlay closes.
-- [ ] Denying consent restores the overlay (can Cancel/draw again).
-- [ ] Pulled PNG shows the underlying app with NO overlay/dim artifacts.
-- [ ] No cropping, search, Lens, networking, OCR, or AI code.
-- [ ] Human tester explicitly confirms pass.
+- [x] Denying consent restores the overlay (can Cancel/draw again).
+- [x] Pulled PNG shows the underlying app with NO overlay/dim artifacts.
+- [x] No cropping, search, Lens, networking, OCR, or AI code.
+- [x] Human tester explicitly confirms pass.
 
 ## Phase 4 Test Rounds
 
@@ -65,9 +64,11 @@ device validation pending. NOT complete until tester confirms.
   v12): 600ms settle delay after display creation, skip first 2 frames,
   keep polling up to 4s preferring the first non-blank frame (64-pixel grid
   check), save last blank only if nothing better arrives; frame stats logged
-  (`frames seen=X skipped=Y usedBlank=Z`). If black persists, those stats +
+  (`frames seen=X skipped=Y usedBlank=Z`). If black persists,   those stats +
   whether the consent dialog appeared each time narrow it to a stateful
   cause (secure content / MIUI mirror quirk).
+- Round 6 (PASS): 4 consecutive captures all good, gallery copies verified.
+  Phase 4 complete.
 
 ## Phase 3 Acceptance Criteria
 
