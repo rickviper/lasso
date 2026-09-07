@@ -2,39 +2,29 @@ package com.ullas.circlesearch
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.PixelFormat
-import android.hardware.display.DisplayManager
-import android.hardware.display.VirtualDisplay
-import android.media.ImageReader
-import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
-import java.io.File
-import java.io.FileOutputStream
 
 /**
- * Phase 3 selection overlay + Phase 4 screen capture: Confirm hides the
- * overlay, asks the system MediaProjection consent, captures one frame into
- * app-private storage for the next phase. Consent denial restores the overlay.
+ * Phase 3 selection overlay + Phase 4 capture entry: Confirm hides the
+ * overlay and takes the system MediaProjection consent; the grant is handed
+ * to [CaptureService] (a `mediaProjection` foreground service, as Android
+ * requires). Denial restores the overlay.
  */
 class OverlayActivity : Activity() {
 
     companion object {
         private const val REQUEST_CAPTURE = 1001
-        private const val FRAME_WAIT_MS = 2000L
     }
 
     private lateinit var selectionView: SelectionView
     private lateinit var rootView: View
-    private var projection: MediaProjection? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,16 +43,6 @@ class OverlayActivity : Activity() {
     override fun onBackPressed() {
         super.onBackPressed()
         Log.i(Activation.TAG, "overlay cancelled via back")
-    }
-
-    override fun onDestroy() {
-        try {
-            projection?.stop()
-        } catch (e: Exception) {
-            Log.w(Activation.TAG, "projection stop failed: $e")
-        }
-        projection = null
-        super.onDestroy()
     }
 
     private fun cancel() {
@@ -99,7 +79,15 @@ class OverlayActivity : Activity() {
             rootView.visibility = View.VISIBLE
             return
         }
-        captureOnce(resultCode, data)
+        val (width, height) = screenSize()
+        val service = Intent(this, CaptureService::class.java)
+            .putExtra(CaptureService.EXTRA_RESULT_CODE, resultCode)
+            .putExtra(CaptureService.EXTRA_DATA, data)
+            .putExtra(CaptureService.EXTRA_WIDTH, width)
+            .putExtra(CaptureService.EXTRA_HEIGHT, height)
+            .putExtra(CaptureService.EXTRA_DENSITY, resources.displayMetrics.densityDpi)
+        startForegroundService(service)
+        finish()
     }
 
     private fun screenSize(): Pair<Int, Int> {
@@ -114,94 +102,5 @@ class OverlayActivity : Activity() {
             manager.defaultDisplay.getRealMetrics(metrics)
             metrics.widthPixels to metrics.heightPixels
         }
-    }
-
-    private fun captureOnce(resultCode: Int, data: Intent) {
-        val (width, height) = screenSize()
-        val density = resources.displayMetrics.densityDpi
-        val manager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        val reader: ImageReader
-        val projection: MediaProjection
-        val display: VirtualDisplay
-        try {
-            reader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
-            projection = manager.getMediaProjection(resultCode, data)
-            this.projection = projection
-            display = projection.createVirtualDisplay(
-                "CircleSearchCapture", width, height, density,
-                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                reader.surface, null, null
-            )
-        } catch (e: Exception) {
-            Log.w(Activation.TAG, "capture setup failed: $e")
-            Toast.makeText(this, "Capture failed: $e", Toast.LENGTH_LONG).show()
-            rootView.visibility = View.VISIBLE
-            return
-        }
-        Thread {
-            var saved: File? = null
-            try {
-                saved = grabFrame(reader, width, height)
-            } catch (e: Exception) {
-                Log.w(Activation.TAG, "capture failed: $e")
-            } finally {
-                try {
-                    display.release()
-                } catch (e: Exception) {
-                    Log.w(Activation.TAG, "display release failed: $e")
-                }
-                try {
-                    projection.stop()
-                } catch (e: Exception) {
-                    Log.w(Activation.TAG, "projection stop failed: $e")
-                }
-                this.projection = null
-                try {
-                    reader.close()
-                } catch (e: Exception) {
-                    Log.w(Activation.TAG, "reader close failed: $e")
-                }
-            }
-            val result = saved
-            runOnUiThread {
-                if (result != null) {
-                    val info = "${result.name} ${width}x$height ${result.length() / 1024}KB"
-                    ProbeState.lastCapture = info
-                    Log.i(Activation.TAG, "captured: $info")
-                    Toast.makeText(this, "Captured: $info", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(this, "Capture failed", Toast.LENGTH_SHORT).show()
-                }
-                finish()
-            }
-        }.start()
-    }
-
-    private fun grabFrame(reader: ImageReader, width: Int, height: Int): File? {
-        val deadline = SystemClock.uptimeMillis() + FRAME_WAIT_MS
-        var bitmap: Bitmap? = null
-        while (SystemClock.uptimeMillis() < deadline && bitmap == null) {
-            val image = reader.acquireLatestImage()
-            if (image == null) {
-                Thread.sleep(50)
-                continue
-            }
-            image.use { img ->
-                val plane = img.planes[0]
-                val buffer = plane.buffer
-                val rowPadding = plane.rowStride - plane.pixelStride * width
-                val paddedWidth = width + rowPadding / plane.pixelStride
-                val padded = Bitmap.createBitmap(paddedWidth, height, Bitmap.Config.ARGB_8888)
-                padded.copyPixelsFromBuffer(buffer)
-                bitmap = Bitmap.createBitmap(padded, 0, 0, width, height)
-                padded.recycle()
-            }
-        }
-        val bmp = bitmap ?: return null
-        val dir = File(filesDir, "captures").apply { mkdirs() }
-        val out = File(dir, "capture_${System.currentTimeMillis()}.png")
-        FileOutputStream(out).use { stream -> bmp.compress(Bitmap.CompressFormat.PNG, 100, stream) }
-        bmp.recycle()
-        return out
     }
 }

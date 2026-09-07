@@ -13,9 +13,11 @@ MediaProjection consent, captures one frame to app-private storage.
 Zero permissions, zero dependencies.
 
 - `OverlayActivity.kt` — overlay + consent (`createScreenCaptureIntent`) +
-  one-frame capture (`ImageReader` + `VirtualDisplay`, bg thread, 2s poll) →
-  PNG in `filesDir/captures/`; deny restores the overlay; projection always
-  stopped/released.
+  hands the grant to `CaptureService`; deny restores the overlay.
+- `CaptureService.kt` — `mediaProjection`-type foreground service (required
+  for `getMediaProjection` at targetSdk 29+): one frame via `ImageReader` +
+  `VirtualDisplay` on a bg thread → PNG in `filesDir/captures/`, then stops.
+  Projection/display/reader always released.
 - Rest unchanged: `Activation`/`ProbeState` (+ `lastCapture`), `ProbeTile`,
   `SelectionView`, dashboard (+ last capture).
 

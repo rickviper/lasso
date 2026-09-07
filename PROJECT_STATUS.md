@@ -7,7 +7,7 @@ device validation pending. NOT complete until tester confirms.
 
 ## Phase 4 Acceptance Criteria
 
-- [x] `./gradlew assembleDebug` succeeds (`0.7.1-phase4`, versionCode 8).
+- [x] `./gradlew assembleDebug` succeeds (`0.7.2-phase4`, versionCode 9).
 - [ ] APK installs on the Xiaomi 11i.
 - [ ] Phase 3 overlay still works (draw, persistent stroke, Cancel, back).
 - [ ] Confirm with a circle → overlay hides → system screen-cast consent
@@ -26,11 +26,19 @@ device validation pending. NOT complete until tester confirms.
   Cause (code-related): `android:noHistory="true"` finished OverlayActivity
   the moment the system consent activity came forward, so the result had no
   recipient; later process death reset the in-memory counters (hence the
-  zeros — not a separate bug). Fix 2026-09-07 (`0.7.1-phase4`, v8): removed
+  zeros — not a separate bug).   Fix 2026-09-07 (`0.7.1-phase4`, v8): removed
   `noHistory`; capture setup wrapped in try/catch (failure restores overlay
   instead of dying); dashboard shows on-disk captures (survives process
   death). If "Start now" still fails, logcat will now show the exact
   exception via the `capture setup failed` / `capture failed` lines.
+- Round 2 (exact cause found): `Capture failed: java.lang.SecurityException`
+  — my error, not the device's. Per official docs, targetSdk 29+ apps MUST
+  call `getMediaProjection` inside a foreground service of type
+  `mediaProjection`; I called it with none. Fix (`0.7.2-phase4`, v9):
+  new `CaptureService` (FGS type `mediaProjection` + both FGS permissions,
+  both auto-granted normal permissions); overlay hands the consent result
+  to it and finishes; capture runs there, then the service stops. Consent
+  flow itself is unchanged and legitimate.
 
 ## Phase 3 Acceptance Criteria
 
