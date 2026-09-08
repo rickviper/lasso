@@ -47,6 +47,8 @@ class CaptureService : Service() {
         private const val NOTIF_ID = 42
         private const val CHANNEL_SEARCH_ID = "search_ready"
         private const val SEARCH_NOTIF_ID = 43
+        /** One-shot delivery of the crop URI (or null) to a waiting overlay. */
+        @Volatile var resultListener: ((String?) -> Unit)? = null
         private const val FRAME_WAIT_MS = 4000L
         private const val SETTLE_MS = 600L
         private const val SKIP_FRAMES = 2
@@ -80,6 +82,7 @@ class CaptureService : Service() {
             } catch (e: Exception) {
                 Log.w(Activation.TAG, "capture failed: $e")
                 ProbeState.lastCapture = "FAILED (error)"
+                deliverResult(null)
                 toast("Capture failed", long = false)
             } finally {
                 captureLock.set(false)
@@ -170,10 +173,12 @@ class CaptureService : Service() {
             } else if (cancelled) {
                 ProbeState.lastCapture = "cancelled by user"
                 ProbeState.lastCrop = "(no capture)"
+                deliverResult(null)
                 toast("Capture cancelled", long = false)
             } else {
                 ProbeState.lastCapture = "FAILED (no frame)"
                 ProbeState.lastCrop = "(no capture)"
+                deliverResult(null)
                 toast("Capture failed (no frame)", long = false)
             }
         } finally {
@@ -285,6 +290,7 @@ class CaptureService : Service() {
             Log.i(Activation.TAG, "crop skipped: no selection bounds")
             ProbeState.lastCrop = "skipped (no bounds)"
             CropHolder.replace(null)
+            deliverResult(null)
             return
         }
         try {
@@ -299,6 +305,7 @@ class CaptureService : Service() {
                 Log.i(Activation.TAG, "crop skipped: clamped region too small ${cw}x$ch")
                 ProbeState.lastCrop = "skipped (too small ${cw}x$ch)"
                 CropHolder.replace(null)
+                deliverResult(null)
                 return
             }
             val cropped = Bitmap.createBitmap(full, left, top, cw, ch)
@@ -314,10 +321,12 @@ class CaptureService : Service() {
             ProbeState.lastCrop = info
             Log.i(Activation.TAG, "cropped: $info from bounds $bounds")
             if (galleryUri != null) notifySearch()
+            deliverResult(galleryUri)
         } catch (e: Exception) {
             Log.w(Activation.TAG, "crop failed: $e")
             ProbeState.lastCrop = "skipped (error)"
             CropHolder.replace(null)
+            deliverResult(null)
         }
     }
 
@@ -397,6 +406,15 @@ class CaptureService : Service() {
             .build()
         manager.notify(SEARCH_NOTIF_ID, notification)
         Log.i(Activation.TAG, "search notification posted")
+    }
+
+    /** Hands the crop URI (or null on any failure) to a waiting overlay. */
+    private fun deliverResult(uri: String?) {
+        val listener = resultListener
+        resultListener = null
+        if (listener != null) {
+            mainHandler.post { listener.invoke(uri) }
+        }
     }
 
     private fun toast(text: String, long: Boolean) {

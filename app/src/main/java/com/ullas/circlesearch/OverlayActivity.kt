@@ -21,10 +21,17 @@ class OverlayActivity : Activity() {
 
     companion object {
         private const val REQUEST_CAPTURE = 1001
+        private const val RESULT_TIMEOUT_MS = 12_000L
     }
 
     private lateinit var selectionView: SelectionView
     private lateinit var rootView: View
+    private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private var resultDelivered = false
+    private val timeoutRunnable = Runnable {
+        Log.i(Activation.TAG, "result wait timed out, closing overlay")
+        finishQuietly()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,7 +99,41 @@ class OverlayActivity : Activity() {
             .putExtra(CaptureService.EXTRA_HEIGHT, height)
             .putExtra(CaptureService.EXTRA_DENSITY, resources.displayMetrics.densityDpi)
         startForegroundService(service)
+        // Stay alive (invisible) until the capture resolves, then auto-open
+        // search — no taps needed after Start now. Timeout guards silence
+        // (service toasts/notifications still cover feedback).
+        waitForResult()
+    }
+
+    private fun waitForResult() {
+        CaptureService.resultListener = { uri ->
+            if (!resultDelivered) {
+                resultDelivered = true
+                mainHandler.removeCallbacks(timeoutRunnable)
+                if (uri != null) {
+                    try {
+                        ShareHelper.openSearch(this, uri)
+                    } catch (e: Exception) {
+                        Log.w(Activation.TAG, "auto-open failed: $e")
+                    }
+                }
+                finish()
+            }
+        }
+        mainHandler.postDelayed(timeoutRunnable, RESULT_TIMEOUT_MS)
+    }
+
+    private fun finishQuietly() {
+        resultDelivered = true
         finish()
+    }
+
+    override fun onDestroy() {
+        mainHandler.removeCallbacks(timeoutRunnable)
+        if (!resultDelivered) {
+            CaptureService.resultListener = null
+        }
+        super.onDestroy()
     }
 
     private fun screenSize(): Pair<Int, Int> {

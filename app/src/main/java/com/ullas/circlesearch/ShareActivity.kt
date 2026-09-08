@@ -30,7 +30,7 @@ class ShareActivity : Activity() {
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         Log.i(Activation.TAG, "sharing crop: $uriString")
-        startActivity(Intent.createChooser(send, "Visual search with"))
+        ShareHelper.openSearch(this, uriString)
         finish()
     }
 

@@ -7,12 +7,14 @@ device validation pending. NOT complete until tester confirms.
 
 ## Phase 8 Acceptance Criteria
 
-- [x] `./gradlew assembleDebug` succeeds (`0.11.0-phase8`, versionCode 19).
+- [x] `./gradlew assembleDebug` succeeds (`0.11.1-phase8`, versionCode 20).
 - [ ] APK installs on the Xiaomi 11i.
 - [ ] Confirm → consent dialog appears OVER the dimmed overlay+circle
   (no dead gap); Deny → instant continue, no flash.
 - [ ] Grant → capture proceeds; shade shows "Circle Search capture" with a
   working Cancel action (cancel → no files, no search notice, clean exit).
+- [ ] After Start now with NO further taps: Lens opens on the crop
+  automatically (direct Google-app target; chooser only as fallback).
 - [ ] Normal E2E unchanged: tap-to-search → chooser → Lens.
 - [ ] Tile remains the only trigger; no unrelated features.
 - [ ] Human tester explicitly confirms pass.
