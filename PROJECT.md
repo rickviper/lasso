@@ -94,7 +94,7 @@ activation).
   circle UI (separate task) with Cancel/Confirm; bounds logged on confirm.
 - Phase 4: SCREEN CAPTURE (done) — MediaProjection consent + one settled
   frame to app-private PNG + gallery copy; noHistory/no-task bugs fixed.
-- Phase 5: CIRCLE → IMAGE (current) — selection bounds + padding → clamped
-  crop retained in memory + debug files; tester validates before closure.
+- Phase 5: CIRCLE → IMAGE (done) — padded clamped crop retained in memory +
+  debug files; single-flight capture, no stale dashboard.
 - Future phases (not implemented): visual search, results presentation.
   Each phase is specified and device-validated separately per AGENTS.md.
