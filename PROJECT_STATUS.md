@@ -4,6 +4,8 @@
 
 Post-Phase-11 Gallery fix verified (device-validated 2026-09-07):
 0 new Gallery images across repeated searches, search intact.
+Signed daily-driver `1.0.1` built (same cert, 39KB); tester installs
+per instructions below.
 
 ## Post-Phase-11 Fix Acceptance
 

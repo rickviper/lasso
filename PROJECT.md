@@ -152,5 +152,6 @@ off-limits (AGENTS.md §5).
 - Post-Phase-11 fix (done, device-verified): Gallery-visible temp images
   eliminated — captures/crops stay app-private, shared via read-only
   `CropProvider`, never published to MediaStore; old runs pruned per
-  capture; 0 new Gallery images with search intact.
+  capture; 0 new Gallery images with search intact. Released as signed
+  daily driver `1.0.1` (same personal cert as `1.0.0`).
   Each phase is specified and device-validated separately per AGENTS.md.
