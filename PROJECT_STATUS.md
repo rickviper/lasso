@@ -2,22 +2,21 @@
 
 ## Current Phase
 
-Phase 8 — UX REFINEMENT. Implementation complete (`0.11.0-phase8`);
-device validation pending. NOT complete until tester confirms.
+Phase 8 complete (device-validated 2026-09-07). Awaiting next instructions.
 
 ## Phase 8 Acceptance Criteria
 
 - [x] `./gradlew assembleDebug` succeeds (`0.11.3-phase8`, versionCode 22).
-- [ ] APK installs on the Xiaomi 11i.
-- [ ] Confirm → consent dialog appears OVER the dimmed overlay+circle
+- [x] APK installs on the Xiaomi 11i.
+- [x] Confirm → consent dialog appears OVER the dimmed overlay+circle
   (no dead gap); Deny → instant continue, no flash.
-- [ ] Grant → capture proceeds; shade shows "Circle Search capture" with a
+- [x] Grant → capture proceeds; shade shows "Circle Search capture" with a
   working Cancel action (cancel → no files, no search notice, clean exit).
-- [ ] After Start now with NO further taps: Lens opens on the crop
+- [x] After Start now with NO further taps: Lens opens on the crop
   automatically (direct Google-app target; chooser only as fallback).
-- [ ] Normal E2E unchanged: tap-to-search → chooser → Lens.
-- [ ] Tile remains the only trigger; no unrelated features.
-- [ ] Human tester explicitly confirms pass.
+- [x] Normal E2E unchanged: tap-to-search → chooser → Lens.
+- [x] Tile remains the only trigger; no unrelated features.
+- [x] Human tester explicitly confirms pass.
 
 ## Phase 8 Test Rounds
 
@@ -44,6 +43,8 @@ device validation pending. NOT complete until tester confirms.
   screen to the full 4s deadline. Fix (`0.11.3-phase8`, v22): break after
   5 consecutive empty polls when a non-blank fallback is held (~0.5s).
   Typical flow now ~1–2s total; blank-fallback path still waits it out.
+- Round 4 (PASS): fast auto-open to Lens, cancel/deny/chooser paths verified.
+  Phase 8 complete.
 
 ## Phase 7 Acceptance Criteria
 
