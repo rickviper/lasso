@@ -124,8 +124,8 @@ off-limits (AGENTS.md §5).
   frame to app-private PNG + gallery copy; noHistory/no-task bugs fixed.
 - Phase 5: CIRCLE → IMAGE (done) — padded clamped crop retained in memory +
   debug files; single-flight capture, no stale dashboard.
-- Phase 6: VISUAL SEARCH FEASIBILITY (current) — candidate analysis +
-  share-handoff PoC; tester reviews and chooses the integration.
-- Future phases (not implemented): chosen search integration, results
-  presentation.
+- Phase 6: VISUAL SEARCH FEASIBILITY (done) — analysis + share-handoff
+  PoC (Lens works); tester chose (a) productized share handoff.
+- Future phases: Phase 7 productized share (tap-to-search after capture),
+  results presentation as applicable.
   Each phase is specified and device-validated separately per AGENTS.md.

@@ -2,22 +2,22 @@
 
 ## Current Phase
 
-Phase 6 — VISUAL SEARCH FEASIBILITY. Implementation complete
-(`0.9.0-phase6`); device validation pending. NOT complete until tester
-reviews and chooses the integration.
+Phase 6 complete (device-validated 2026-09-07). Awaiting Phase 7 instructions
+(chosen integration: share-handoff productized).
 
 ## Phase 6 Acceptance Criteria
 
 - [x] `./gradlew assembleDebug` succeeds (`0.9.1-phase6`, versionCode 16).
-- [ ] APK installs on the Xiaomi 11i.
-- [ ] Feasibility analysis recorded (Lens/Bing/Cloud Vision/ML Kit/TinEye/
+- [x] APK installs on the Xiaomi 11i.
+- [x] Feasibility analysis recorded (Lens/Bing/Cloud Vision/ML Kit/TinEye/
   share, 9 criteria each) — in PROJECT.md.
-- [ ] PoC: capture a crop → dashboard "Visual search (share crop)" →
-  system chooser appears with Lens (or available targets).
-- [ ] PoC: picking Lens shows visual results for the crop; no auth/CAPTCHA/
+- [x] PoC: capture a crop → dashboard "Visual search (share crop)" →
+  system chooser appears with Lens (tester confirmed "Search image
+  (Google) works splendidly").
+- [x] PoC: picking Lens shows visual results for the crop; no auth/CAPTCHA/
   restriction bypass anywhere.
-- [ ] No permanent search integration added.
-- [ ] Human reviews result and chooses the integration (Phase 7 input).
+- [x] No permanent search integration added.
+- [x] Human reviews result and chooses the integration (chose: share-handoff).
 
 ## Phase 6 Test Rounds
 
@@ -50,6 +50,9 @@ reviews and chooses the integration.
   Known limitation: captures taken while any lock/auth screen is up will
   show that screen. PoC result stands: share → Lens works splendidly on
   good captures. Awaiting integration choice (a/b/c/d).
+- Round 4 (CLOSE): tester chose (a) — productize the share handoff.
+  Consent dialog confirmed non-suppressible by OS design (recorded, no
+  bypass attempted). Phase 6 complete.
 
 ## Phase 5 Acceptance Criteria
 
