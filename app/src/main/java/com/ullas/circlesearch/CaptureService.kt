@@ -206,7 +206,11 @@ class CaptureService : Service() {
         var seen = 0
         var best: Bitmap? = null
         var bestBlank = true
-        while (SystemClock.uptimeMillis() < deadline && bestBlank && !cancelled) {
+        // Fallback: on a static screen the mirror may produce a single
+        // latched frame. Never discard it — skipped frames are held so a
+        // quiet display still yields a capture at deadline.
+        var fallback: Bitmap? = null
+        while (SystemClock.uptimeMillis() < deadline && bestBlank) {
             val image = reader.acquireLatestImage()
             if (image == null) {
                 Thread.sleep(100)
@@ -217,7 +221,8 @@ class CaptureService : Service() {
             if (bmp == null) continue
             if (skipped < SKIP_FRAMES) {
                 skipped++
-                bmp.recycle()
+                fallback?.recycle()
+                fallback = bmp
                 continue
             }
             if (!isBlank(bmp)) {
@@ -230,6 +235,15 @@ class CaptureService : Service() {
                 best = bmp
                 Thread.sleep(100)
             }
+        }
+        if (best == null && fallback != null) {
+            Log.i(Activation.TAG, "using fallback frame (static screen)")
+            best = fallback
+            fallback = null
+            bestBlank = isBlank(best)
+        } else {
+            fallback?.recycle()
+            fallback = null
         }
         Log.i(Activation.TAG, "frames seen=$seen skipped=$skipped usedBlank=$bestBlank")
         if (cancelled) {

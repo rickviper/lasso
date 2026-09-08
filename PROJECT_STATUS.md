@@ -7,7 +7,7 @@ device validation pending. NOT complete until tester confirms.
 
 ## Phase 8 Acceptance Criteria
 
-- [x] `./gradlew assembleDebug` succeeds (`0.11.1-phase8`, versionCode 20).
+- [x] `./gradlew assembleDebug` succeeds (`0.11.2-phase8`, versionCode 21).
 - [ ] APK installs on the Xiaomi 11i.
 - [ ] Confirm → consent dialog appears OVER the dimmed overlay+circle
   (no dead gap); Deny → instant continue, no flash.
@@ -31,6 +31,14 @@ device validation pending. NOT complete until tester confirms.
   `frames seen=…` line, any `failed` line, plus app + orientation held.
   - `real≠requested` → geometry fix. `seen=0` → production stall.
     `seen>0` → conversion fix.
+- Round 2 (exact cause from logcat): `real=requested`, but
+  `frames seen=1 skipped=1` — one settled frame arrived and our skip logic
+  recycled it, then the static screen produced nothing more. Root cause
+  (code-related): skip-first-frames assumed continuous flow (true when the
+  overlay finished and UI animated); the 0.11.1 always-alive invisible
+  overlay yields ~one latched frame. Fix (`0.11.2-phase8`, v21): skipped
+  frames held as fallback, saved at deadline when nothing better arrives;
+  blank-preference and transition settle unchanged.
 
 ## Phase 7 Acceptance Criteria
 
