@@ -2,7 +2,51 @@
 
 ## Current Phase
 
-Phase 8 complete (device-validated 2026-09-07). Awaiting next instructions.
+Phase 9 — ROBUSTNESS / DESTRUCTIVE TESTING. Suite defined below; no code
+changes until the tester reports failures. Each reported failure gets:
+reproduce → classify → root cause → smallest fix → rebuild → retest.
+
+## Phase 9 Acceptance Criteria
+
+- [x] Destructive suite defined (`0.11.3-phase8`, versionCode 22, no changes).
+- [ ] Tester executes the full suite on the Xiaomi 11i.
+- [ ] Every reported failure fixed with the smallest change, rebuilt, retested.
+- [ ] No unrelated rewrites; tile remains the sole trigger.
+- [ ] Human tester confirms the robustness suite passes.
+
+## Phase 9 Destructive Suite (report PASS/FAIL + what you saw per case)
+
+- R1 Rapid double-tap tile: tap tile twice fast → expect ONE overlay, no
+  crash, drawing works.
+- R2 Back at each stage: back on overlay (exits), back on consent dialog
+  (returns to overlay, can redraw), back during invisible wait (clean exit,
+  capture still completes to notification).
+- R3 Home mid-flow: Home on overlay, Home on consent dialog → expect no
+  crash; report where you land when returning.
+- R4 Rotate during draw: rotate with overlay open → expect usable overlay
+  (drawing may reset), no crash.
+- R5 Rotate during consent dialog and during capture wait → expect capture
+  completes or fails gracefully with toast/log, no crash.
+- R6 Deny → retry: deny consent, draw again, Confirm, grant → expect normal
+  capture (button re-enabled, no stuck state).
+- R7 Swipe-kill app mid-flow: kill during overlay and during capture wait →
+  expect no crash loop; next tile tap starts clean.
+- R8 Back-to-back runs: complete E2E twice in quick succession → expect two
+  independent captures, second never silently swallowed (check logcat for
+  `already in progress` + 12s-timeout behavior).
+- R9 Notifications revoked: App info → Notifications OFF → full E2E →
+  expect capture + Lens auto-open still work (only the tap-to-search notice
+  missing); then re-allow.
+- R10 Reboot: reboot with tile placed → tile still present and E2E works.
+- R11 Heavy foreground app: run E2E over a game/heavy app (no applock) →
+  expect capture + crop correct, note latency.
+- R12 Secure/DRM app (e.g. video app): expect graceful behavior — capture
+  may be black per OS design; report whether the app stays stable and what
+  Lens receives (known limitation, must not crash).
+
+## Phase 9 Test Rounds
+
+- (none reported yet)
 
 ## Phase 8 Acceptance Criteria
 

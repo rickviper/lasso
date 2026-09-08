@@ -131,4 +131,6 @@ off-limits (AGENTS.md §5).
 - Phase 8: UX REFINEMENT (done) — visible-through-consent overlay,
   cancellable capture, auto-open Lens (~1–2s), single-flight + fallback
   hardened frame grab.
+- Phase 9: ROBUSTNESS / DESTRUCTIVE TESTING (current) — R1–R12 suite;
+  fix only reported failures, smallest change each.
   Each phase is specified and device-validated separately per AGENTS.md.
