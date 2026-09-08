@@ -2,7 +2,59 @@
 
 ## Current Phase
 
-Phase 9 complete (device-validated 2026-09-07). Awaiting next instructions.
+Phase 10 — XIAOMI / MIUI HARDENING. Settings guide + reliability suite
+defined below; code changes ONLY for tester-reported failures.
+
+## Phase 10 Acceptance Criteria
+
+- [x] MIUI settings recipe + M1–M10 suite documented (no code changes).
+- [ ] Tester applies the recipe on the Xiaomi 11i.
+- [ ] Tester executes M1–M10; every failure fixed smallest-first, retested.
+- [ ] No hacks/bypasses; tile remains the sole trigger.
+- [ ] Human tester confirms reliability acceptance.
+
+## Phase 10 MIUI Settings Recipe (Xiaomi 11i, exact paths to confirm)
+
+1. QS tile: swipe down → edit tiles → **Circle Search** in active tiles.
+   Persists across reboots (verified M1).
+2. Notifications (REQUIRED for tap-to-search): long-press app icon → App
+   info → Notifications → **Allow**. Reinstalls reset this: open the app
+   once post-install and Allow at the prompt. Dashboard sharing works
+   without it.
+3. Battery saver: App info → Battery saver → **No restrictions**
+   (recommended so MIUI never defers the capture service; M4 tests whether
+   restrictive mode actually breaks anything).
+4. Autostart: nothing to set — this build offers no autostart option and
+   needs none (no background work; the tile is system-driven and
+   self-revives, proven Phase 2/Round-2).
+5. Overlay/"Display pop-up in background": NOT needed — the app holds no
+   overlay permission (translucent activity only). Do not grant anything here.
+6. "Allow restricted settings": NOT needed anymore (accessibility service
+   removed in Phase 2). Dead service entry should have been disabled.
+7. App lock: test captures on apps WITHOUT app lock (locked apps
+   legitimately capture the lock screen — Round 3 finding, not a bug).
+
+## Phase 10 Reliability Suite (report PASS/FAIL + observations per case)
+
+- M1 Reboot cold: reboot → without opening the app, tile → full E2E.
+- M2 Kill + tile: swipe-kill app → tile E2E (tile must self-revive).
+- M3 Notifications OFF: disable per recipe step 2 → E2E → capture +
+  auto-open Lens must still work; only the tap notice missing. Re-allow after.
+- M4 Restrictive battery: set Battery saver restrictive → E2E → pass means
+  No-restrictions is optional; fail means it is REQUIRED (recipe updated).
+- M5 Do Not Disturb ON: full E2E → auto-open must be unaffected; note
+  whether the tap notice appears silently.
+- M6 Overnight Doze: leave phone idle overnight → morning tile E2E, no app
+  pre-opened.
+- M7 Tile remove/re-add: remove tile, re-add, E2E.
+- M8 Reinstall: `adb install -r` → re-allow notifications → E2E; report
+  what state survived (tile placement, grants).
+- M9 Dark mode ON: overlay buttons/readability + dashboard legible.
+- M10 Low-power mode (Battery saver system-wide): E2E, note latency.
+
+## Phase 10 Test Rounds
+
+- (none reported yet)
 
 ## Phase 9 Acceptance Criteria
 
