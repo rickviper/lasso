@@ -11,13 +11,37 @@ android {
         applicationId = "com.ullas.circlesearch"
         minSdk = 26
         targetSdk = 34
-        versionCode = 22
-        versionName = "0.11.3-phase8"
+        versionCode = 23
+        versionName = "1.0.0"
+    }
+
+    // Release signing passwords live in local.properties (gitignored, never
+    // committed). Keystore: C:\Android\keystores\circlesearch-release.keystore
+    // (back it up: losing it forces uninstall + fresh install on updates).
+    def keystoreProps = new Properties()
+    def keystorePropsFile = rootProject.file("local.properties")
+    if (keystorePropsFile.exists()) {
+        keystorePropsFile.withInputStream { keystoreProps.load(it) }
+    }
+
+    signingConfigs {
+        release {
+            storeFile = file(keystoreProps["releaseKeystore"])
+            storePassword = keystoreProps["releaseKeystorePassword"]
+            keyAlias = keystoreProps["releaseKeyAlias"]
+            keyPassword = keystoreProps["releaseKeyPassword"]
+        }
     }
 
     buildTypes {
         release {
-            // Phase 0: no minification, no shrinking.
+            signingConfig = signingConfigs.release
+            minifyEnabled = true
+            shrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 

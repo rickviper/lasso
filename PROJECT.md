@@ -113,6 +113,18 @@ off-limits (AGENTS.md §5).
 - applicationId `com.ullas.circlesearch`
 - Zero external dependencies.
 
+## Release (Phase 11)
+
+- `1.0.0` (versionCode 23), R8 minify + shrink, keep rule for
+  `SelectionView` (layout inflation), release keystore at
+  `C:\Android\keystores\circlesearch-release.keystore` with passwords in
+  gitignored `local.properties` — BACK IT UP, losing it forces uninstall +
+  fresh install on updates. Debug key must be uninstalled before the
+  release APK installs (signature mismatch otherwise).
+- Audit: 3 necessary permissions (FGS pair + POST_NOTIFICATIONS), zero
+  dependencies/secrets, 40 operational log lines without PII (kept for
+  personal diagnostics), try/catch at every fallible boundary.
+
 ## Roadmap
 
 - Phase 0: scaffold + debug APK installs/launches on Xiaomi 11i (done).
@@ -135,4 +147,6 @@ off-limits (AGENTS.md §5).
   green, zero failures, no code changes.
 - Phase 10: XIAOMI / MIUI HARDENING (done) — recipe + M1–M10 green,
   zero failures, no code changes.
+- Phase 11: DAILY-DRIVER RELEASE (current) — release audit + signed
+  minified `1.0.0`; tester runs final acceptance.
   Each phase is specified and device-validated separately per AGENTS.md.

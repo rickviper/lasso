@@ -2,7 +2,24 @@
 
 ## Current Phase
 
-Phase 10 complete (device-validated 2026-09-07). Awaiting next instructions.
+Phase 11 — DAILY-DRIVER RELEASE. Implementation complete (`1.0.0`, v23
+release APK built + verified); device acceptance pending. NOT complete
+until tester confirms.
+
+## Phase 11 Acceptance Criteria
+
+- [x] Audit: 3 necessary permissions, zero deps/secrets, 40 PII-free log
+  lines (kept), error handling at all boundaries.
+- [x] Release config: R8 minify+shrink (+SelectionView keep rule), local
+  release keystore (outside repo, gitignored passwords), `1.0.0`.
+- [x] `assembleRelease` succeeds; APK signed (apksigner-verified personal
+  cert), 38KB, non-debuggable.
+- [ ] Uninstall debug APK, install release APK (fresh signature).
+- [ ] Grant notifications, place tile, full E2E incl. overlay draw
+  (validates R8 kept the custom view) → Lens results.
+- [ ] Uninstall release APK cleanly (`adb uninstall`); gallery copies
+  remain by OS design (private data removed).
+- [ ] Human tester explicitly confirms final acceptance.
 
 ## Phase 10 Acceptance Criteria
 
