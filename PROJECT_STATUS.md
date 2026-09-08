@@ -2,16 +2,15 @@
 
 ## Current Phase
 
-Phase 10 — XIAOMI / MIUI HARDENING. Settings guide + reliability suite
-defined below; code changes ONLY for tester-reported failures.
+Phase 10 complete (device-validated 2026-09-07). Awaiting next instructions.
 
 ## Phase 10 Acceptance Criteria
 
 - [x] MIUI settings recipe + M1–M10 suite documented (no code changes).
-- [ ] Tester applies the recipe on the Xiaomi 11i.
-- [ ] Tester executes M1–M10; every failure fixed smallest-first, retested.
-- [ ] No hacks/bypasses; tile remains the sole trigger.
-- [ ] Human tester confirms reliability acceptance.
+- [x] Tester applies the recipe on the Xiaomi 11i.
+- [x] Tester executes M1–M10; every failure fixed smallest-first, retested.
+- [x] No hacks/bypasses; tile remains the sole trigger.
+- [x] Human tester confirms reliability acceptance.
 
 ## Phase 10 MIUI Settings Recipe (Xiaomi 11i, exact paths to confirm)
 
@@ -54,7 +53,8 @@ defined below; code changes ONLY for tester-reported failures.
 
 ## Phase 10 Test Rounds
 
-- (none reported yet)
+- Round 1 (PASS): recipe applied, full M1–M10 suite green, zero failures —
+  no code changes required. Phase 10 complete.
 
 ## Phase 9 Acceptance Criteria
 

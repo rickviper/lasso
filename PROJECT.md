@@ -133,6 +133,6 @@ off-limits (AGENTS.md §5).
   hardened frame grab.
 - Phase 9: ROBUSTNESS / DESTRUCTIVE TESTING (done) — R1–R12 suite fully
   green, zero failures, no code changes.
-- Phase 10: XIAOMI / MIUI HARDENING (current) — settings recipe + M1–M10
-  reliability suite; code only for reported failures.
+- Phase 10: XIAOMI / MIUI HARDENING (done) — recipe + M1–M10 green,
+  zero failures, no code changes.
   Each phase is specified and device-validated separately per AGENTS.md.
