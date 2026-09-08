@@ -7,7 +7,7 @@ device validation pending. NOT complete until tester confirms.
 
 ## Phase 8 Acceptance Criteria
 
-- [x] `./gradlew assembleDebug` succeeds (`0.11.2-phase8`, versionCode 21).
+- [x] `./gradlew assembleDebug` succeeds (`0.11.3-phase8`, versionCode 22).
 - [ ] APK installs on the Xiaomi 11i.
 - [ ] Confirm → consent dialog appears OVER the dimmed overlay+circle
   (no dead gap); Deny → instant continue, no flash.
@@ -39,6 +39,11 @@ device validation pending. NOT complete until tester confirms.
   overlay yields ~one latched frame. Fix (`0.11.2-phase8`, v21): skipped
   frames held as fallback, saved at deadline when nothing better arrives;
   blank-preference and transition settle unchanged.
+- Round 3 (latency): auto-open works but slow (~5s). Cause (code-related):
+  after holding the fallback frame the loop pointlessly polled a silent
+  screen to the full 4s deadline. Fix (`0.11.3-phase8`, v22): break after
+  5 consecutive empty polls when a non-blank fallback is held (~0.5s).
+  Typical flow now ~1–2s total; blank-fallback path still waits it out.
 
 ## Phase 7 Acceptance Criteria
 

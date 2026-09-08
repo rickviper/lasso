@@ -210,12 +210,19 @@ class CaptureService : Service() {
         // latched frame. Never discard it — skipped frames are held so a
         // quiet display still yields a capture at deadline.
         var fallback: Bitmap? = null
+        var fallbackBlank = true
+        var nullStreak = 0
         while (SystemClock.uptimeMillis() < deadline && bestBlank) {
             val image = reader.acquireLatestImage()
             if (image == null) {
+                nullStreak++
+                // Quiet screen + good frame in hand: stop waiting, use it.
+                // (Blank fallback keeps waiting to deadline as before.)
+                if (fallback != null && !fallbackBlank && nullStreak >= 5) break
                 Thread.sleep(100)
                 continue
             }
+            nullStreak = 0
             seen++
             val bmp = image.use { img -> imageToBitmap(img, width, height) }
             if (bmp == null) continue
@@ -223,6 +230,7 @@ class CaptureService : Service() {
                 skipped++
                 fallback?.recycle()
                 fallback = bmp
+                fallbackBlank = isBlank(bmp)
                 continue
             }
             if (!isBlank(bmp)) {
