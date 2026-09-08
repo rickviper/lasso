@@ -126,6 +126,6 @@ off-limits (AGENTS.md §5).
   debug files; single-flight capture, no stale dashboard.
 - Phase 6: VISUAL SEARCH FEASIBILITY (done) — analysis + share-handoff
   PoC (Lens works); tester chose (a) productized share handoff.
-- Phase 7: FIRST COMPLETE MVP (current) — integrated tile→circle→search
-  via tap-to-search notification; tester validates end-to-end.
+- Phase 7: FIRST COMPLETE MVP (done) — tile→circle→tap-to-search→Lens
+  end-to-end on device; only necessary permissions.
   Each phase is specified and device-validated separately per AGENTS.md.

@@ -2,19 +2,20 @@
 
 ## Current Phase
 
-Phase 7 — FIRST COMPLETE MVP. Implementation complete (`0.10.0-phase7`);
-device validation pending. NOT complete until tester confirms end-to-end.
+Phase 7 complete (device-validated 2026-09-07). First MVP done: QUICK
+SETTINGS → CIRCLE → SEARCH works end-to-end. Awaiting next instructions.
 
 ## Phase 7 Acceptance Criteria
 
 - [x] `./gradlew assembleDebug` succeeds (`0.10.1-phase7`, versionCode 18).
-- [ ] APK installs on the Xiaomi 11i.
-- [ ] E2E (no-applock app, portrait): tile → dimmed overlay over the app →
+- [x] APK installs on the Xiaomi 11i.
+- [x] E2E (no-applock app, portrait): tile → dimmed overlay over the app →
   circle → Confirm → consent → "Circle Search ready" notification appears.
-- [ ] Tap notification → chooser → Lens → visual results for the circled
+- [x] Tap notification → chooser → Lens → visual results for the circled
   region. Dashboard never needed mid-flow.
-- [ ] Only trigger is the QS tile; no new permissions; no unrelated features.
-- [ ] Human tester explicitly confirms the end-to-end workflow passes.
+- [x] Only trigger is the QS tile; only necessary permissions (FGS pair for
+  capture, POST_NOTIFICATIONS for tap-to-search); no unrelated features.
+- [x] Human tester explicitly confirms the end-to-end workflow passes.
 
 ## Phase 7 Test Rounds
 
@@ -25,6 +26,8 @@ device validation pending. NOT complete until tester confirms end-to-end.
   off-by-default until POST_NOTIFICATIONS is declared + runtime-granted.
   Fix (`0.10.1-phase7`, v18): manifest permission + request on dashboard
   open (grant logged). Dashboard sharing works with or without the grant.
+- Round 2 (PASS): notification granted, E2E tile→circle→tap→Lens passes.
+  Phase 7 complete — first MVP done.
 
 ## Phase 6 Acceptance Criteria
 
