@@ -113,8 +113,16 @@ class CaptureService : Service() {
             Log.w(Activation.TAG, "capture called with invalid consent result")
             return
         }
+        // Ground truth: the physical display's current size/rotation. The
+        // mirror buffer MUST match it; overlay-window metrics can disagree
+        // (rotation, decor), which yields partial/slivered frames.
+        val displayManager = getSystemService(DISPLAY_SERVICE) as DisplayManager
+        val physical = displayManager.getDisplay(android.view.Display.DEFAULT_DISPLAY)
+        val rotation = physical?.rotation
+        val (capW, capH) = physicalSize(physical) ?: (width to height)
+        Log.i(Activation.TAG, "display rotation=$rotation real=${capW}x$capH requested=${width}x$height")
         val manager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        val reader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
+        val reader = ImageReader.newInstance(capW, capH, PixelFormat.RGBA_8888, 2)
         val projection = manager.getMediaProjection(resultCode, data)
         projection.registerCallback(object : MediaProjection.Callback() {
             override fun onStop() {
@@ -122,7 +130,7 @@ class CaptureService : Service() {
             }
         }, mainHandler)
         val display = projection.createVirtualDisplay(
-            "CircleSearchCapture", width, height, density,
+            "CircleSearchCapture", capW, capH, density,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             reader.surface, null, null
         )
@@ -130,11 +138,11 @@ class CaptureService : Service() {
         // very first frames risks transition/placeholder (black) buffers.
         Thread.sleep(SETTLE_MS)
         try {
-            val saved = grabFrame(reader, width, height, density)
+            val saved = grabFrame(reader, capW, capH, density)
             if (saved != null) {
                 val galleryUri = savePublicCopy(saved)
                 ProbeState.lastCaptureUri = galleryUri
-                val info = "${saved.name} ${width}x$height ${saved.length() / 1024}KB" +
+                val info = "${saved.name} ${capW}x$capH ${saved.length() / 1024}KB" +
                     if (galleryUri != null) " + gallery" else ""
                 ProbeState.lastCapture = info
                 Log.i(Activation.TAG, "captured: $info")
@@ -280,6 +288,28 @@ class CaptureService : Service() {
             Log.w(Activation.TAG, "crop failed: $e")
             ProbeState.lastCrop = "skipped (error)"
             CropHolder.replace(null)
+        }
+    }
+
+    /**
+     * Physical display size in the CURRENT rotation, or null if unavailable
+     * (caller falls back to the overlay's requested size).
+     */
+    private fun physicalSize(display: android.view.Display?): Pair<Int, Int>? {
+        if (display == null) return null
+        return try {
+            @Suppress("DEPRECATION")
+            val metrics = android.util.DisplayMetrics()
+            @Suppress("DEPRECATION")
+            display.getRealMetrics(metrics)
+            if (metrics.widthPixels > 0 && metrics.heightPixels > 0) {
+                metrics.widthPixels to metrics.heightPixels
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.w(Activation.TAG, "physical size failed: $e")
+            null
         }
     }
 

@@ -8,7 +8,7 @@ reviews and chooses the integration.
 
 ## Phase 6 Acceptance Criteria
 
-- [x] `./gradlew assembleDebug` succeeds (`0.9.0-phase6`, versionCode 15).
+- [x] `./gradlew assembleDebug` succeeds (`0.9.1-phase6`, versionCode 16).
 - [ ] APK installs on the Xiaomi 11i.
 - [ ] Feasibility analysis recorded (Lens/Bing/Cloud Vision/ML Kit/TinEye/
   share, 9 criteria each) — in PROJECT.md.
@@ -31,6 +31,16 @@ reviews and chooses the integration.
   (1) which app shows this, (2) Chrome/Settings retest on current build
   still perfect. If confirmed, Phase 7 must handle protected content
   gracefully (we already have isBlank(); warn instead of searching black).
+- Round 2 (FAIL, theory revised): black/slivered captures now in Gallery,
+  Chrome, YouTube, Instagram — Home perfect, same build. Secure-content
+  theory DEAD (Chrome/Gallery aren't secure). Remaining suspect:
+  buffer/display size mismatch — mirror sized from overlay-window metrics
+  disagreeing with the physical display (rotation/decor), yielding partial
+  frames. Fix (`0.9.1-phase6`, v16): capture sized from the physical
+  display's real metrics with rotation logged
+  (`display rotation=R real=WxH requested=WxH`); overlay metrics only a
+  fallback. Crop alignment may be off when sizes disagree — expected this
+  round; the size log is the diagnostic.
 
 ## Phase 5 Acceptance Criteria
 
