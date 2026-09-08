@@ -23,6 +23,11 @@
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+        <activity
+            android:name=".ShareActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <service
             android:name=".CaptureService"
             android:exported="false"

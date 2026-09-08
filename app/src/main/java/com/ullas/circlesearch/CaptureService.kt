@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.ContentValues
 import android.content.Intent
@@ -43,6 +44,8 @@ class CaptureService : Service() {
         const val EXTRA_DENSITY = "density"
         private const val CHANNEL_ID = "capture_service"
         private const val NOTIF_ID = 42
+        private const val CHANNEL_SEARCH_ID = "search_ready"
+        private const val SEARCH_NOTIF_ID = 43
         private const val FRAME_WAIT_MS = 4000L
         private const val SETTLE_MS = 600L
         private const val SKIP_FRAMES = 2
@@ -284,6 +287,7 @@ class CaptureService : Service() {
             val info = "${out.name} ${cw}x$ch" + if (galleryUri != null) " + gallery" else ""
             ProbeState.lastCrop = info
             Log.i(Activation.TAG, "cropped: $info from bounds $bounds")
+            if (galleryUri != null) notifySearch()
         } catch (e: Exception) {
             Log.w(Activation.TAG, "crop failed: $e")
             ProbeState.lastCrop = "skipped (error)"
@@ -343,6 +347,30 @@ class CaptureService : Service() {
             Log.w(Activation.TAG, "gallery copy failed: $e")
             null
         }
+    }
+
+    /**
+     * Phase 7 tap-to-search: posted while still foreground (no extra
+     * permission path needed). Tap opens [ShareActivity]; auto-cancels.
+     */
+    private fun notifySearch() {
+        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        manager.createNotificationChannel(
+            NotificationChannel(CHANNEL_SEARCH_ID, "Visual search", NotificationManager.IMPORTANCE_DEFAULT)
+        )
+        val search = PendingIntent.getActivity(
+            this, 0, Intent(this, ShareActivity::class.java),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val notification = Notification.Builder(this, CHANNEL_SEARCH_ID)
+            .setContentTitle("Circle Search ready")
+            .setContentText("Tap to search the circled image")
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentIntent(search)
+            .setAutoCancel(true)
+            .build()
+        manager.notify(SEARCH_NOTIF_ID, notification)
+        Log.i(Activation.TAG, "search notification posted")
     }
 
     private fun toast(text: String, long: Boolean) {

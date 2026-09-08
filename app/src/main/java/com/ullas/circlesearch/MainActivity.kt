@@ -1,6 +1,7 @@
 package com.ullas.circlesearch
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -51,23 +52,10 @@ class MainActivity : Activity() {
     }
 
     /**
-     * Phase 6 PoC: hand the crop to the system share sheet so the tester can
-     * open it in Lens (or any visual-search target). User-driven, no API,
-     * no auth, no bypass. Production path (Phase 7) wraps the same intent.
+     * Phase 7: dashboard path to the same [ShareActivity] the tap-to-search
+     * notification uses. Single chooser-firing path, no duplication.
      */
     private fun shareCrop() {
-        val uriString = ProbeState.lastCropUri
-        if (uriString == null) {
-            android.widget.Toast.makeText(this, "No crop with gallery copy yet", android.widget.Toast.LENGTH_SHORT).show()
-            return
-        }
-        val uri = android.net.Uri.parse(uriString)
-        val send = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
-            type = "image/png"
-            putExtra(android.content.Intent.EXTRA_STREAM, uri)
-            addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        android.util.Log.i(Activation.TAG, "sharing crop: $uriString")
-        startActivity(android.content.Intent.createChooser(send, "Visual search with"))
+        startActivity(Intent(this, ShareActivity::class.java))
     }
 }
