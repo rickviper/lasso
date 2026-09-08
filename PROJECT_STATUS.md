@@ -19,6 +19,19 @@ device validation pending. NOT complete until tester confirms.
 - [ ] Tile remains the only trigger; no unrelated features.
 - [ ] Human tester explicitly confirms pass.
 
+## Phase 8 Test Rounds
+
+- Round 1 (FAIL): toast "Capture failed (no frame)" after Start now.
+  Zero usable images in the 4s window. Suspects ordered: (1) 0.9.1's
+  physical-display sizing never device-tested (geometry); (2) 0.11.1 keeps
+  the overlay alive during capture (frame-production stall?); (3) stride
+  conversion rejects. Current logs already discriminate (see below) —
+  NO code change until logcat identifies which. Needed from one failing
+  run: the `display rotation=… real=… requested=…` line, the
+  `frames seen=…` line, any `failed` line, plus app + orientation held.
+  - `real≠requested` → geometry fix. `seen=0` → production stall.
+    `seen>0` → conversion fix.
+
 ## Phase 7 Acceptance Criteria
 
 - [x] `./gradlew assembleDebug` succeeds (`0.10.1-phase7`, versionCode 18).
