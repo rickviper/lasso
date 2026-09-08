@@ -96,6 +96,10 @@ sends the crop's MediaStore URI to the system chooser (no FileProvider, no
 new dependency, no permission). Cloud Vision documented as the in-app
 alternative for the Phase 7 choice (requires tester-provisioned key).
 
+Known limitation (tester-isolated 2026-09-07): MIUI App Lock blanks the
+screen when our flow foregrounds; captures then (correctly) show the lock
+screen. Test on apps without app lock.
+
 ## Toolchain (Phase 0)
 
 - AGP 8.5.2, Gradle 8.7 (wrapper), Kotlin 1.9.24

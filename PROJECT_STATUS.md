@@ -41,6 +41,15 @@ reviews and chooses the integration.
   (`display rotation=R real=WxH requested=WxH`); overlay metrics only a
   fallback. Crop alignment may be off when sizes disagree — expected this
   round; the size log is the diagnostic.
+- Round 3 (ROOT CAUSE FOUND by tester, not-code): MIUI App Lock. When our
+  overlay/consent flow foregrounds, App Lock blanks the screen with the
+  fingerprint/pattern prompt, and the capture faithfully records that black
+  lock screen (sliver = transition). Apps WITHOUT app lock capture
+  perfectly. Nothing to fix — bypassing a lock screen is forbidden
+  (AGENTS.md §5); capturing the displayed lock screen is correct behavior.
+  Known limitation: captures taken while any lock/auth screen is up will
+  show that screen. PoC result stands: share → Lens works splendidly on
+  good captures. Awaiting integration choice (a/b/c/d).
 
 ## Phase 5 Acceptance Criteria
 
