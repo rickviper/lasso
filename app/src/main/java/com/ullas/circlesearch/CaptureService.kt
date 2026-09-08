@@ -6,7 +6,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.Bitmap
@@ -20,12 +19,10 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.SystemClock
-import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Toast
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
 import kotlin.math.ceil
 
@@ -136,6 +133,7 @@ class CaptureService : Service() {
             Log.w(Activation.TAG, "capture called with invalid consent result")
             return
         }
+        pruneOldRuns()
         // Ground truth: the physical display's current size/rotation. The
         // mirror buffer MUST match it; overlay-window metrics can disagree
         // (rotation, decor), which yields partial/slivered frames.
@@ -163,10 +161,7 @@ class CaptureService : Service() {
         try {
             val saved = grabFrame(reader, capW, capH, density)
             if (saved != null) {
-                val galleryUri = savePublicCopy(saved)
-                ProbeState.lastCaptureUri = galleryUri
-                val info = "${saved.name} ${capW}x$capH ${saved.length() / 1024}KB" +
-                    if (galleryUri != null) " + gallery" else ""
+                val info = "${saved.name} ${capW}x$capH ${saved.length() / 1024}KB"
                 ProbeState.lastCapture = info
                 Log.i(Activation.TAG, "captured: $info")
                 toast("Captured: $info", long = true)
@@ -337,13 +332,13 @@ class CaptureService : Service() {
             FileOutputStream(out).use { stream ->
                 cropped.compress(Bitmap.CompressFormat.PNG, 100, stream)
             }
-            val galleryUri = savePublicCopy(out)
-            ProbeState.lastCropUri = galleryUri
-            val info = "${out.name} ${cw}x$ch" + if (galleryUri != null) " + gallery" else ""
+            val cropUri = CropProvider.uriFor(out.name)
+            ProbeState.lastCropUri = cropUri
+            val info = "${out.name} ${cw}x$ch"
             ProbeState.lastCrop = info
             Log.i(Activation.TAG, "cropped: $info from bounds $bounds")
-            if (galleryUri != null) notifySearch()
-            deliverResult(galleryUri)
+            notifySearch()
+            deliverResult(cropUri)
         } catch (e: Exception) {
             Log.w(Activation.TAG, "crop failed: $e")
             ProbeState.lastCrop = "skipped (error)"
@@ -375,34 +370,22 @@ class CaptureService : Service() {
     }
 
     /**
-     * Public copy in Pictures/CircleSearch so the capture is visible in the
-     * gallery and file managers, and shareable via MediaStore URI (no
-     * FileProvider/extra dependency needed). API 29+: no permission needed
-     * for our own files. Returns the content URI string, or null on failure.
-     * The app-private PNG remains the next phase's source of truth.
+     * Temp-file lifecycle: each run keeps only its own files. Previous runs'
+     * app-private files are deleted when a new capture starts, so nothing
+     * accumulates. (Pre-fix MediaStore gallery copies belong to the user
+     * now — left alone; delete the Pictures/CircleSearch album once
+     * manually. Cancel/fail paths save nothing, so nothing extra to clean.)
      */
-    private fun savePublicCopy(source: File): String? {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            Log.w(Activation.TAG, "public copy skipped below API 29")
-            return null
-        }
-        return try {
-            val values = ContentValues().apply {
-                put(MediaStore.Images.Media.DISPLAY_NAME, source.name)
-                put(MediaStore.Images.Media.MIME_TYPE, "image/png")
-                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CircleSearch")
-            }
-            val uri = contentResolver.insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
-            ) ?: return null
-            contentResolver.openOutputStream(uri)?.use { out ->
-                FileInputStream(source).use { input -> input.copyTo(out) }
-            } ?: return null
-            Log.i(Activation.TAG, "gallery copy saved: $uri")
-            uri.toString()
+    private fun pruneOldRuns() {
+        try {
+            val dir = File(filesDir, "captures")
+            val removed = dir.listFiles()?.count { file ->
+                (file.name.startsWith("capture_") || file.name.startsWith("crop_")) &&
+                    file.delete()
+            } ?: 0
+            if (removed > 0) Log.i(Activation.TAG, "pruned $removed old run file(s)")
         } catch (e: Exception) {
-            Log.w(Activation.TAG, "gallery copy failed: $e")
-            null
+            Log.w(Activation.TAG, "prune failed: $e")
         }
     }
 

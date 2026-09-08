@@ -41,6 +41,11 @@
             android:name=".CaptureService"
             android:exported="false"
             android:foregroundServiceType="mediaProjection" />
+        <provider
+            android:name=".CropProvider"
+            android:authorities="com.ullas.circlesearch.crops"
+            android:exported="false"
+            android:grantUriPermissions="true" />
         <service
             android:name=".ProbeTile"
             android:exported="true"

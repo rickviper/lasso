@@ -149,4 +149,7 @@ off-limits (AGENTS.md §5).
   zero failures, no code changes.
 - Phase 11: DAILY-DRIVER RELEASE (done) — audited, signed minified `1.0.0`
   installed from release APK, E2E verified, uninstall clean.
+- Post-Phase-11 fix (current): Gallery-visible temp images eliminated —
+  captures/crops stay app-private, shared via read-only `CropProvider`,
+  never published to MediaStore; old runs pruned per capture.
   Each phase is specified and device-validated separately per AGENTS.md.

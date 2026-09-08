@@ -41,7 +41,6 @@ object ProbeState {
     @Volatile var lastSelection: String? = null
     @Volatile var selectionBounds: android.graphics.RectF? = null
     @Volatile var lastCapture: String? = null
-    @Volatile var lastCaptureUri: String? = null
     @Volatile var lastCrop: String? = null
     @Volatile var lastCropUri: String? = null
 }
