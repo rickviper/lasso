@@ -147,6 +147,6 @@ off-limits (AGENTS.md §5).
   green, zero failures, no code changes.
 - Phase 10: XIAOMI / MIUI HARDENING (done) — recipe + M1–M10 green,
   zero failures, no code changes.
-- Phase 11: DAILY-DRIVER RELEASE (current) — release audit + signed
-  minified `1.0.0`; tester runs final acceptance.
+- Phase 11: DAILY-DRIVER RELEASE (done) — audited, signed minified `1.0.0`
+  installed from release APK, E2E verified, uninstall clean.
   Each phase is specified and device-validated separately per AGENTS.md.

@@ -2,9 +2,8 @@
 
 ## Current Phase
 
-Phase 11 — DAILY-DRIVER RELEASE. Implementation complete (`1.0.0`, v23
-release APK built + verified); device acceptance pending. NOT complete
-until tester confirms.
+Phase 11 complete (device-validated 2026-09-07). Daily driver released:
+`1.0.0` installed from release APK, E2E verified, uninstall clean.
 
 ## Phase 11 Acceptance Criteria
 
@@ -14,12 +13,12 @@ until tester confirms.
   release keystore (outside repo, gitignored passwords), `1.0.0`.
 - [x] `assembleRelease` succeeds; APK signed (apksigner-verified personal
   cert), 38KB, non-debuggable.
-- [ ] Uninstall debug APK, install release APK (fresh signature).
-- [ ] Grant notifications, place tile, full E2E incl. overlay draw
+- [x] Uninstall debug APK, install release APK (fresh signature).
+- [x] Grant notifications, place tile, full E2E incl. overlay draw
   (validates R8 kept the custom view) → Lens results.
-- [ ] Uninstall release APK cleanly (`adb uninstall`); gallery copies
+- [x] Uninstall release APK cleanly (`adb uninstall`); gallery copies
   remain by OS design (private data removed).
-- [ ] Human tester explicitly confirms final acceptance.
+- [x] Human tester explicitly confirms final acceptance.
 
 ## Phase 10 Acceptance Criteria
 
@@ -179,6 +178,9 @@ until tester confirms.
   off-by-default until POST_NOTIFICATIONS is declared + runtime-granted.
   Fix (`0.10.1-phase7`, v18): manifest permission + request on dashboard
   open (grant logged). Dashboard sharing works with or without the grant.
+- Round 2 (PASS): release `1.0.0` installed (debug uninstalled first),
+  notifications granted, tile placed, E2E incl. overlay draw → Lens;
+  uninstall clean. Phase 11 complete — daily driver released.
 - Round 2 (PASS): notification granted, E2E tile→circle→tap→Lens passes.
   Phase 7 complete — first MVP done.
 
