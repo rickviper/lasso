@@ -2,10 +2,8 @@
 
 ## Current Phase
 
-Post-Phase-11 Gallery fix verified (device-validated 2026-09-07):
-0 new Gallery images across repeated searches, search intact.
-Signed daily-driver `1.0.1` built (same cert, 39KB); tester installs
-per instructions below.
+All work complete and device-validated. Daily driver: signed `1.0.1`
+(v24) installed from release APK, E2E verified on Xiaomi 11i.
 
 ## Post-Phase-11 Fix Acceptance
 
