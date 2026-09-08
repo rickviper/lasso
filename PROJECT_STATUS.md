@@ -2,20 +2,19 @@
 
 ## Current Phase
 
-Post-Phase-11 bug fix — Gallery-visible temp images. Implementation
-complete (`1.0.1`, v24 debug); device verification pending. NOT fixed
-until tester confirms 0 new Gallery images with working search.
+Post-Phase-11 Gallery fix verified (device-validated 2026-09-07):
+0 new Gallery images across repeated searches, search intact.
 
 ## Post-Phase-11 Fix Acceptance
 
 - [x] `./gradlew assembleDebug` succeeds (`1.0.1`, versionCode 24).
-- [ ] APK installs on the Xiaomi 11i.
-- [ ] E2E ×3 (tile → circle → Confirm → Start → Lens results each time).
-- [ ] Gallery delta is 0 new images across all runs.
-- [ ] Lens receives the correct circled crop each time.
-- [ ] Cancel/deny/fail paths leave no files; repeated runs don't accumulate
+- [x] APK installs on the Xiaomi 11i.
+- [x] E2E ×3 (tile → circle → Confirm → Start → Lens results each time).
+- [x] Gallery delta is 0 new images across all runs.
+- [x] Lens receives the correct circled crop each time.
+- [x] Cancel/deny/fail paths leave no files; repeated runs don't accumulate
   (private dir holds latest run only).
-- [ ] Human tester explicitly confirms.
+- [x] Human tester explicitly confirms.
 
 ## Phase 11 Acceptance Criteria
 
