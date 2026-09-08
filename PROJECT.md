@@ -100,6 +100,12 @@ Known limitation (tester-isolated 2026-09-07): MIUI App Lock blanks the
 screen when our flow foregrounds; captures then (correctly) show the lock
 screen. Test on apps without app lock.
 
+Known platform rule: MediaProjection consent is per-session by OS design —
+the system dialog appears on every capture and cannot be suppressed or
+pre-granted by a third-party app. All suppression paths (device-owner
+provisioning, signature permissions, auto-clicking the consent UI) are
+off-limits (AGENTS.md §5).
+
 ## Toolchain (Phase 0)
 
 - AGP 8.5.2, Gradle 8.7 (wrapper), Kotlin 1.9.24
