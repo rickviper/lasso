@@ -2,17 +2,15 @@
 
 ## Current Phase
 
-Phase 9 — ROBUSTNESS / DESTRUCTIVE TESTING. Suite defined below; no code
-changes until the tester reports failures. Each reported failure gets:
-reproduce → classify → root cause → smallest fix → rebuild → retest.
+Phase 9 complete (device-validated 2026-09-07). Awaiting next instructions.
 
 ## Phase 9 Acceptance Criteria
 
 - [x] Destructive suite defined (`0.11.3-phase8`, versionCode 22, no changes).
-- [ ] Tester executes the full suite on the Xiaomi 11i.
-- [ ] Every reported failure fixed with the smallest change, rebuilt, retested.
-- [ ] No unrelated rewrites; tile remains the sole trigger.
-- [ ] Human tester confirms the robustness suite passes.
+- [x] Tester executes the full suite on the Xiaomi 11i.
+- [x] Every reported failure fixed with the smallest change, rebuilt, retested.
+- [x] No unrelated rewrites; tile remains the sole trigger.
+- [x] Human tester confirms the robustness suite passes.
 
 ## Phase 9 Destructive Suite (report PASS/FAIL + what you saw per case)
 
@@ -46,7 +44,8 @@ reproduce → classify → root cause → smallest fix → rebuild → retest.
 
 ## Phase 9 Test Rounds
 
-- (none reported yet)
+- Round 1 (PASS): full R1–R12 suite green on device, zero failures reported —
+  no code changes required. Phase 9 complete.
 
 ## Phase 8 Acceptance Criteria
 
