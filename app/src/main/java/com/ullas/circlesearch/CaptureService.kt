@@ -42,6 +42,7 @@ class CaptureService : Service() {
         const val EXTRA_WIDTH = "width"
         const val EXTRA_HEIGHT = "height"
         const val EXTRA_DENSITY = "density"
+        private const val ACTION_CANCEL = "com.ullas.circlesearch.action.CANCEL_CAPTURE"
         private const val CHANNEL_ID = "capture_service"
         private const val NOTIF_ID = 42
         private const val CHANNEL_SEARCH_ID = "search_ready"
@@ -56,10 +57,17 @@ class CaptureService : Service() {
 
     private val mainHandler = Handler(Looper.getMainLooper())
     private val captureLock = java.util.concurrent.atomic.AtomicBoolean(false)
+    @Volatile private var cancelled = false
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_CANCEL) {
+            cancelled = true
+            Log.i(Activation.TAG, "capture cancel requested")
+            return START_NOT_STICKY
+        }
+        cancelled = false
         if (!captureLock.compareAndSet(false, true)) {
             Log.w(Activation.TAG, "capture already in progress, ignoring duplicate start")
             stopSelf()
@@ -91,6 +99,15 @@ class CaptureService : Service() {
             .setContentTitle("Circle Search capture")
             .setContentText("Capturing screen")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .addAction(
+                android.R.drawable.ic_delete,
+                getString(R.string.btn_cancel),
+                PendingIntent.getService(
+                    this, 0,
+                    Intent(this, CaptureService::class.java).setAction(ACTION_CANCEL),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+            )
             .build()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             startForeground(NOTIF_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
@@ -150,6 +167,10 @@ class CaptureService : Service() {
                 ProbeState.lastCapture = info
                 Log.i(Activation.TAG, "captured: $info")
                 toast("Captured: $info", long = true)
+            } else if (cancelled) {
+                ProbeState.lastCapture = "cancelled by user"
+                ProbeState.lastCrop = "(no capture)"
+                toast("Capture cancelled", long = false)
             } else {
                 ProbeState.lastCapture = "FAILED (no frame)"
                 ProbeState.lastCrop = "(no capture)"
@@ -180,7 +201,7 @@ class CaptureService : Service() {
         var seen = 0
         var best: Bitmap? = null
         var bestBlank = true
-        while (SystemClock.uptimeMillis() < deadline && bestBlank) {
+        while (SystemClock.uptimeMillis() < deadline && bestBlank && !cancelled) {
             val image = reader.acquireLatestImage()
             if (image == null) {
                 Thread.sleep(100)
@@ -206,6 +227,11 @@ class CaptureService : Service() {
             }
         }
         Log.i(Activation.TAG, "frames seen=$seen skipped=$skipped usedBlank=$bestBlank")
+        if (cancelled) {
+            Log.i(Activation.TAG, "capture cancelled by user")
+            best?.recycle()
+            return null
+        }
         val bmp = best ?: return null
         cropSelection(bmp, densityDpi)
         val dir = File(filesDir, "captures").apply { mkdirs() }

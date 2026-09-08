@@ -64,8 +64,8 @@ class OverlayActivity : Activity() {
         ProbeState.lastSelection = text
         ProbeState.selectionBounds = android.graphics.RectF(bounds)
         Log.i(Activation.TAG, "selection confirmed: $text")
-        // Hide our UI so the capture contains only the underlying app.
-        rootView.visibility = View.GONE
+        // Overlay stays visible behind the system consent dialog; hidden
+        // only once the grant arrives (cleaner than hide-then-restore).
         val manager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         @Suppress("DEPRECATION")
         startActivityForResult(manager.createScreenCaptureIntent(), REQUEST_CAPTURE)
@@ -77,12 +77,13 @@ class OverlayActivity : Activity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode != REQUEST_CAPTURE) return
         if (resultCode != RESULT_OK || data == null) {
-            Log.i(Activation.TAG, "capture consent denied, overlay restored")
+            Log.i(Activation.TAG, "capture consent denied, continuing overlay")
             Toast.makeText(this, "Capture declined", Toast.LENGTH_SHORT).show()
-            rootView.visibility = View.VISIBLE
             findViewById<Button>(R.id.btn_confirm).isEnabled = true
             return
         }
+        // Hide our UI now so the capture contains only the underlying app.
+        rootView.visibility = View.GONE
         val (width, height) = screenSize()
         val service = Intent(this, CaptureService::class.java)
             .putExtra(CaptureService.EXTRA_RESULT_CODE, resultCode)

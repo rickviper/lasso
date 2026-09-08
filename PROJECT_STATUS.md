@@ -2,8 +2,20 @@
 
 ## Current Phase
 
-Phase 7 complete (device-validated 2026-09-07). First MVP done: QUICK
-SETTINGS → CIRCLE → SEARCH works end-to-end. Awaiting next instructions.
+Phase 8 — UX REFINEMENT. Implementation complete (`0.11.0-phase8`);
+device validation pending. NOT complete until tester confirms.
+
+## Phase 8 Acceptance Criteria
+
+- [x] `./gradlew assembleDebug` succeeds (`0.11.0-phase8`, versionCode 19).
+- [ ] APK installs on the Xiaomi 11i.
+- [ ] Confirm → consent dialog appears OVER the dimmed overlay+circle
+  (no dead gap); Deny → instant continue, no flash.
+- [ ] Grant → capture proceeds; shade shows "Circle Search capture" with a
+  working Cancel action (cancel → no files, no search notice, clean exit).
+- [ ] Normal E2E unchanged: tap-to-search → chooser → Lens.
+- [ ] Tile remains the only trigger; no unrelated features.
+- [ ] Human tester explicitly confirms pass.
 
 ## Phase 7 Acceptance Criteria
 

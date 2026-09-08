@@ -128,4 +128,6 @@ off-limits (AGENTS.md §5).
   PoC (Lens works); tester chose (a) productized share handoff.
 - Phase 7: FIRST COMPLETE MVP (done) — tile→circle→tap-to-search→Lens
   end-to-end on device; only necessary permissions.
+- Phase 8: UX REFINEMENT (current) — overlay stays visible through consent;
+  cancellable capture notification; tester validates.
   Each phase is specified and device-validated separately per AGENTS.md.
