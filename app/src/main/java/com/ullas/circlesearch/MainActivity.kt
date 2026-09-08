@@ -22,6 +22,9 @@ class MainActivity : Activity() {
         findViewById<Button>(R.id.btn_refresh).setOnClickListener {
             refresh()
         }
+        findViewById<Button>(R.id.btn_share).setOnClickListener {
+            shareCrop()
+        }
     }
 
     override fun onResume() {
@@ -45,5 +48,26 @@ class MainActivity : Activity() {
         val latest = capturesDir.listFiles()?.maxByOrNull { it.lastModified() }
         out.appendLine("Files on disk: ${latest?.let { "${it.name} ${it.length() / 1024}KB" } ?: "(none)"}")
         statusView.text = out.toString().trimEnd()
+    }
+
+    /**
+     * Phase 6 PoC: hand the crop to the system share sheet so the tester can
+     * open it in Lens (or any visual-search target). User-driven, no API,
+     * no auth, no bypass. Production path (Phase 7) wraps the same intent.
+     */
+    private fun shareCrop() {
+        val uriString = ProbeState.lastCropUri
+        if (uriString == null) {
+            android.widget.Toast.makeText(this, "No crop with gallery copy yet", android.widget.Toast.LENGTH_SHORT).show()
+            return
+        }
+        val uri = android.net.Uri.parse(uriString)
+        val send = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+            type = "image/png"
+            putExtra(android.content.Intent.EXTRA_STREAM, uri)
+            addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        android.util.Log.i(Activation.TAG, "sharing crop: $uriString")
+        startActivity(android.content.Intent.createChooser(send, "Visual search with"))
     }
 }

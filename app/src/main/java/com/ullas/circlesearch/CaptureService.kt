@@ -132,9 +132,10 @@ class CaptureService : Service() {
         try {
             val saved = grabFrame(reader, width, height, density)
             if (saved != null) {
-                val gallery = savePublicCopy(saved)
+                val galleryUri = savePublicCopy(saved)
+                ProbeState.lastCaptureUri = galleryUri
                 val info = "${saved.name} ${width}x$height ${saved.length() / 1024}KB" +
-                    if (gallery) " + gallery" else ""
+                    if (galleryUri != null) " + gallery" else ""
                 ProbeState.lastCapture = info
                 Log.i(Activation.TAG, "captured: $info")
                 toast("Captured: $info", long = true)
@@ -270,8 +271,9 @@ class CaptureService : Service() {
             FileOutputStream(out).use { stream ->
                 cropped.compress(Bitmap.CompressFormat.PNG, 100, stream)
             }
-            val gallery = savePublicCopy(out)
-            val info = "${out.name} ${cw}x$ch" + if (gallery) " + gallery" else ""
+            val galleryUri = savePublicCopy(out)
+            ProbeState.lastCropUri = galleryUri
+            val info = "${out.name} ${cw}x$ch" + if (galleryUri != null) " + gallery" else ""
             ProbeState.lastCrop = info
             Log.i(Activation.TAG, "cropped: $info from bounds $bounds")
         } catch (e: Exception) {
@@ -283,13 +285,15 @@ class CaptureService : Service() {
 
     /**
      * Public copy in Pictures/CircleSearch so the capture is visible in the
-     * gallery and file managers. API 29+: no permission needed for our own
-     * files. The app-private PNG remains the next phase's source of truth.
+     * gallery and file managers, and shareable via MediaStore URI (no
+     * FileProvider/extra dependency needed). API 29+: no permission needed
+     * for our own files. Returns the content URI string, or null on failure.
+     * The app-private PNG remains the next phase's source of truth.
      */
-    private fun savePublicCopy(source: File): Boolean {
+    private fun savePublicCopy(source: File): String? {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             Log.w(Activation.TAG, "public copy skipped below API 29")
-            return false
+            return null
         }
         return try {
             val values = ContentValues().apply {
@@ -299,15 +303,15 @@ class CaptureService : Service() {
             }
             val uri = contentResolver.insert(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
-            ) ?: return false
+            ) ?: return null
             contentResolver.openOutputStream(uri)?.use { out ->
                 FileInputStream(source).use { input -> input.copyTo(out) }
-            } ?: return false
+            } ?: return null
             Log.i(Activation.TAG, "gallery copy saved: $uri")
-            true
+            uri.toString()
         } catch (e: Exception) {
             Log.w(Activation.TAG, "gallery copy failed: $e")
-            false
+            null
         }
     }
 

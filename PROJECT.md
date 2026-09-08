@@ -78,6 +78,24 @@ activation).
 - Dropped: fingerprint gestures, volume keys, power button, overlay dot,
   accessibility shortcut.
 
+## Key Finding (Phase 6, investigated 2026-09-07)
+
+No public Google Lens API exists (scraper vendors excluded: bypass rule).
+Bing Visual Search was retired Aug 2025 with no Azure replacement. Remaining
+legitimate options:
+
+| Candidate | Availability | API/SDK | Auth | Cost | Submit | Android | Results | Privacy | Latency | Limits |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Cloud Vision API | GA, REST `images:annotate` | HTTPS + API key | Key + billing project | ~$1.50/1K after 1K free/mo | base64 ≤20MB | any HTTPS | labels/objects/landmarks/logos + WEB_DETECTION (pages + similar images) | image to Google Cloud | ~1–3s | needs human key+billing setup |
+| ML Kit labeling (bundled) | GA `image-labeling:17.0.9` | on-device | none | free | Bitmap | minSdk 23 ✓ | 400+ labels only, NO web | fully private | instant | +5.7MB APK; Play Svcs variant instead: +200KB, model downloads on first run |
+| TinEye API | GA, REST | key (bundles) | prepaid $200/5K ($0.04/s) | expensive | URL/upload | any HTTPS | exact/near-duplicate matches only | private per ToS | ~1–2s | no semantic recognition |
+| Share handoff → Lens | OS share sheet | ACTION_SEND, no SDK | none | free | content URI | all | FULL Lens results | user-controlled share | instant handoff | leaves app; needs Google app installed |
+
+PoC (this phase): share handoff — dashboard "Visual search (share crop)"
+sends the crop's MediaStore URI to the system chooser (no FileProvider, no
+new dependency, no permission). Cloud Vision documented as the in-app
+alternative for the Phase 7 choice (requires tester-provisioned key).
+
 ## Toolchain (Phase 0)
 
 - AGP 8.5.2, Gradle 8.7 (wrapper), Kotlin 1.9.24
@@ -96,5 +114,8 @@ activation).
   frame to app-private PNG + gallery copy; noHistory/no-task bugs fixed.
 - Phase 5: CIRCLE → IMAGE (done) — padded clamped crop retained in memory +
   debug files; single-flight capture, no stale dashboard.
-- Future phases (not implemented): visual search, results presentation.
+- Phase 6: VISUAL SEARCH FEASIBILITY (current) — candidate analysis +
+  share-handoff PoC; tester reviews and chooses the integration.
+- Future phases (not implemented): chosen search integration, results
+  presentation.
   Each phase is specified and device-validated separately per AGENTS.md.

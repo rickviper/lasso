@@ -2,7 +2,22 @@
 
 ## Current Phase
 
-Phase 5 complete (device-validated 2026-09-07). Awaiting Phase 6 instructions.
+Phase 6 — VISUAL SEARCH FEASIBILITY. Implementation complete
+(`0.9.0-phase6`); device validation pending. NOT complete until tester
+reviews and chooses the integration.
+
+## Phase 6 Acceptance Criteria
+
+- [x] `./gradlew assembleDebug` succeeds (`0.9.0-phase6`, versionCode 15).
+- [ ] APK installs on the Xiaomi 11i.
+- [ ] Feasibility analysis recorded (Lens/Bing/Cloud Vision/ML Kit/TinEye/
+  share, 9 criteria each) — in PROJECT.md.
+- [ ] PoC: capture a crop → dashboard "Visual search (share crop)" →
+  system chooser appears with Lens (or available targets).
+- [ ] PoC: picking Lens shows visual results for the crop; no auth/CAPTCHA/
+  restriction bypass anywhere.
+- [ ] No permanent search integration added.
+- [ ] Human reviews result and chooses the integration (Phase 7 input).
 
 ## Phase 5 Acceptance Criteria
 

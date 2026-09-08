@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Circle Search</string>
-    <string name="phase_label">Phase 5 — circle to image</string>
+    <string name="phase_label">Phase 6 — visual search feasibility</string>
     <string name="probe_status_placeholder">Loading status…</string>
     <string name="tile_label">Circle Search</string>
     <string name="btn_refresh">Refresh status</string>
+    <string name="btn_share">Visual search (share crop)</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_confirm">Confirm</string>
 </resources>
