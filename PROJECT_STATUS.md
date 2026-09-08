@@ -19,6 +19,19 @@ reviews and chooses the integration.
 - [ ] No permanent search integration added.
 - [ ] Human reviews result and chooses the integration (Phase 7 input).
 
+## Phase 6 Test Rounds
+
+- Round 1 (FAIL, likely not-code): on some foreground app (looks like a video
+  app), full + crop capture mostly BLACK with only a thin readable left
+  strip; Home screen captures perfectly on the same build, and Chrome was
+  perfect in Phase 4. Signature matches Android FLAG_SECURE content
+  (DRM/secure video surfaces are excluded from MediaProjection by OS design
+  — cannot and must not be bypassed, AGENTS.md §5). Crop inherits the black
+  from the full frame, so no separate crop bug. Pending tester confirmation:
+  (1) which app shows this, (2) Chrome/Settings retest on current build
+  still perfect. If confirmed, Phase 7 must handle protected content
+  gracefully (we already have isBlank(); warn instead of searching black).
+
 ## Phase 5 Acceptance Criteria
 
 - [x] `./gradlew assembleDebug` succeeds (`0.8.1-phase5`, versionCode 14).
