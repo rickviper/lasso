@@ -7,7 +7,7 @@ device validation pending. NOT complete until tester confirms end-to-end.
 
 ## Phase 7 Acceptance Criteria
 
-- [x] `./gradlew assembleDebug` succeeds (`0.10.0-phase7`, versionCode 17).
+- [x] `./gradlew assembleDebug` succeeds (`0.10.1-phase7`, versionCode 18).
 - [ ] APK installs on the Xiaomi 11i.
 - [ ] E2E (no-applock app, portrait): tile → dimmed overlay over the app →
   circle → Confirm → consent → "Circle Search ready" notification appears.
@@ -15,6 +15,16 @@ device validation pending. NOT complete until tester confirms end-to-end.
   region. Dashboard never needed mid-flow.
 - [ ] Only trigger is the QS tile; no new permissions; no unrelated features.
 - [ ] Human tester explicitly confirms the end-to-end workflow passes.
+
+## Phase 7 Test Rounds
+
+- Round 1 (FAIL, my wrong assumption): no "Circle Search ready" notification
+  ever appears — App info shows notifications greyed-out OFF. Cause:
+  code-related gap — I relied on an FGS exemption that covers only the
+  service's own notice, not content notifications; on Android 13+ these are
+  off-by-default until POST_NOTIFICATIONS is declared + runtime-granted.
+  Fix (`0.10.1-phase7`, v18): manifest permission + request on dashboard
+  open (grant logged). Dashboard sharing works with or without the grant.
 
 ## Phase 6 Acceptance Criteria
 

@@ -26,6 +26,30 @@ class MainActivity : Activity() {
         findViewById<Button>(R.id.btn_share).setOnClickListener {
             shareCrop()
         }
+        requestNotificationPermission()
+    }
+
+    /**
+     * Phase 7: tap-to-search is a content notification, which on Android 13+
+     * requires the runtime POST_NOTIFICATIONS grant (the FGS exemption covers
+     * only the service's own notice). Without it the notification silently
+     * never appears. Dashboard sharing works regardless.
+     */
+    private fun requestNotificationPermission() {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU) return
+        if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) ==
+            android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) return
+        requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 2001)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 2001) {
+            val granted = grantResults.isNotEmpty() &&
+                grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED
+            android.util.Log.i(Activation.TAG, "notification permission granted=$granted")
+        }
     }
 
     override fun onResume() {
