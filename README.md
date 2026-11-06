@@ -218,7 +218,7 @@ Tested recipe for the Xiaomi 11i (Android 13); other devices need at most the fi
 
 ## Development Process
 
-This started as a **personal project out of frustration** — my Xiaomi 11i didn't have Circle to Search, and I wanted it. I built it incrementally, one phase at a time, under a strict methodology recorded in [`AGENTS.md`](AGENTS.md): every phase required a successful build, an install on the physical Xiaomi 11i, explicit acceptance tests executed by a human tester (me), and a `phase-X-complete` git checkpoint. Compilation alone never counted as done. The goal was never to demonstrate sophisticated Android engineering — the goal was a **reliable personal utility** that works on *this* device.
+This started as a **personal project out of frustration** — my Xiaomi 11i didn't have Circle to Search, and I wanted it. I built it incrementally, one phase at a time, under a strict methodology, every phase required a successful build, an install on the physical Xiaomi 11i, explicit acceptance tests executed by a human tester (me), and a `phase-X-complete` git checkpoint. Compilation alone never counted as done. The goal was never to demonstrate sophisticated Android engineering — the goal was a **reliable personal utility** that works on *this* device.
 
 | Phase | Scope | Result |
 |---|---|---|
