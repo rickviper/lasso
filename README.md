@@ -26,7 +26,6 @@ No bloat, no accounts, no analytics, no network code of its own — **zero third
 - [Using It](#using-it)
 - [Known Limitations](#known-limitations)
 - [Development Process](#development-process)
-- [Project Documentation](#project-documentation)
 - [License](#license)
 
 ---
