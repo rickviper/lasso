@@ -1,4 +1,4 @@
-package com.ullas.circlesearch
+package com.lasso.app
 
 import android.content.ContentProvider
 import android.content.ContentValues
@@ -19,7 +19,7 @@ import java.io.FileNotFoundException
 class CropProvider : ContentProvider() {
 
     companion object {
-        const val AUTHORITY = "com.ullas.circlesearch.crops"
+        const val AUTHORITY = "com.lasso.app.crops"
         private const val FILES = 1
         private val MATCHER = UriMatcher(UriMatcher.NO_MATCH).apply {
             addURI(AUTHORITY, "*", FILES)

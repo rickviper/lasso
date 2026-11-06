@@ -43,7 +43,7 @@
             android:foregroundServiceType="mediaProjection" />
         <provider
             android:name=".CropProvider"
-            android:authorities="com.ullas.circlesearch.crops"
+            android:authorities="com.lasso.app.crops"
             android:exported="false"
             android:grantUriPermissions="true" />
         <service

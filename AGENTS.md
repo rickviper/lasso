@@ -1,6 +1,6 @@
 # AGENTS.md
 
-# Circle Search — OpenCode Development Rules
+# Lasso — OpenCode Development Rules
 
 ## 1. Project Objective
 
@@ -8,14 +8,14 @@ Build a personal Android application for the Xiaomi 11i running Android 13 that 
 
 1. User activates the service.
 2. A selection interface appears over the current application.
-3. User circles an object on the screen.
+3. User lassos an object on the screen.
 4. The application extracts the selected visual region.
 5. The selected image is sent to an appropriate visual-search mechanism.
 6. Useful visual-search results are presented to the user.
 
 The ultimate user experience should be:
 
-ACTIVATE → CIRCLE → SEARCH
+ACTIVATE → LASSO → SEARCH
 
 The application is primarily intended for personal use.
 

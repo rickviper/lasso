@@ -1,4 +1,4 @@
-package com.ullas.circlesearch
+package com.lasso.app
 
 import android.app.Activity
 import android.content.Intent

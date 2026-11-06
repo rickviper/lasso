@@ -1,4 +1,4 @@
-package com.ullas.circlesearch
+package com.lasso.app
 
 import android.content.Context
 import android.util.Log
@@ -14,7 +14,7 @@ import android.widget.Toast
  */
 object Activation {
 
-    const val TAG = "CircleSearchProbe"
+    const val TAG = "LassoProbe"
     const val SOURCE_TILE = "quick-settings-tile"
 
     fun trigger(context: Context, source: String) {
@@ -26,7 +26,7 @@ object Activation {
         // toast from a background process throws. Counts + log are the
         // ground truth; never let feedback crash us.
         try {
-            Toast.makeText(context, "Circle Search activated ($source)", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Lasso activated ($source)", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Log.w(TAG, "toast failed (suppressed on this build): $e")
         }

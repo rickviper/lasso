@@ -1,4 +1,4 @@
-package com.ullas.circlesearch
+package com.lasso.app
 
 import android.app.Activity
 import android.content.Intent
@@ -61,7 +61,7 @@ class OverlayActivity : Activity() {
     private fun confirm() {
         val bounds = selectionView.selectionBounds()
         if (bounds == null) {
-            Toast.makeText(this, "Draw a circle first", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Draw a loop first", Toast.LENGTH_SHORT).show()
             return
         }
         // Prevent double-tap spawning duplicate consent + capture flows.

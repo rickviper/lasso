@@ -1,4 +1,4 @@
-# Circle Search — Project Status
+# Lasso — Project Status
 
 ## Current Phase
 
@@ -9,9 +9,9 @@ All work complete and device-validated. Daily driver: signed `1.0.1`
 
 - [x] `./gradlew assembleDebug` succeeds (`1.0.1`, versionCode 24).
 - [x] APK installs on the Xiaomi 11i.
-- [x] E2E ×3 (tile → circle → Confirm → Start → Lens results each time).
+- [x] E2E ×3 (tile → lasso → Confirm → Start → Lens results each time).
 - [x] Gallery delta is 0 new images across all runs.
-- [x] Lens receives the correct circled crop each time.
+- [x] Lens receives the correct lassoed crop each time.
 - [x] Cancel/deny/fail paths leave no files; repeated runs don't accumulate
   (private dir holds latest run only).
 - [x] Human tester explicitly confirms.
@@ -41,7 +41,7 @@ All work complete and device-validated. Daily driver: signed `1.0.1`
 
 ## Phase 10 MIUI Settings Recipe (Xiaomi 11i, exact paths to confirm)
 
-1. QS tile: swipe down → edit tiles → **Circle Search** in active tiles.
+1. QS tile: swipe down → edit tiles → **Lasso** in active tiles.
    Persists across reboots (verified M1).
 2. Notifications (REQUIRED for tap-to-search): long-press app icon → App
    info → Notifications → **Allow**. Reinstalls reset this: open the app
@@ -132,7 +132,7 @@ All work complete and device-validated. Daily driver: signed `1.0.1`
 - [x] APK installs on the Xiaomi 11i.
 - [x] Confirm → consent dialog appears OVER the dimmed overlay+circle
   (no dead gap); Deny → instant continue, no flash.
-- [x] Grant → capture proceeds; shade shows "Circle Search capture" with a
+- [x] Grant → capture proceeds; shade shows "Lasso capture" with a
   working Cancel action (cancel → no files, no search notice, clean exit).
 - [x] After Start now with NO further taps: Lens opens on the crop
   automatically (direct Google-app target; chooser only as fallback).
@@ -173,8 +173,8 @@ All work complete and device-validated. Daily driver: signed `1.0.1`
 - [x] `./gradlew assembleDebug` succeeds (`0.10.1-phase7`, versionCode 18).
 - [x] APK installs on the Xiaomi 11i.
 - [x] E2E (no-applock app, portrait): tile → dimmed overlay over the app →
-  circle → Confirm → consent → "Circle Search ready" notification appears.
-- [x] Tap notification → chooser → Lens → visual results for the circled
+  lasso → Confirm → consent → "Lasso ready" notification appears.
+- [x] Tap notification → chooser → Lens → visual results for the lassoed
   region. Dashboard never needed mid-flow.
 - [x] Only trigger is the QS tile; only necessary permissions (FGS pair for
   capture, POST_NOTIFICATIONS for tap-to-search); no unrelated features.
@@ -182,7 +182,7 @@ All work complete and device-validated. Daily driver: signed `1.0.1`
 
 ## Phase 7 Test Rounds
 
-- Round 1 (FAIL, my wrong assumption): no "Circle Search ready" notification
+- Round 1 (FAIL, my wrong assumption): no "Lasso ready" notification
   ever appears — App info shows notifications greyed-out OFF. Cause:
   code-related gap — I relied on an FGS exemption that covers only the
   service's own notice, not content notifications; on Android 13+ these are
@@ -307,7 +307,7 @@ All work complete and device-validated. Daily driver: signed `1.0.1`
   to it and finishes; capture runs there, then the service stops. Consent
   flow itself is unchanged and legitimate.
 - Round 3 (FAIL): capture itself works and the PNG generates fine, BUT the
-  phone lands on the Circle Search dashboard instead of staying on the
+  phone lands on the Lasso dashboard instead of staying on the
   foreground app. Cause under investigation — need timing + PNG content to
   distinguish task-reorder-before-capture from task-switch-after-capture.
 - Round 3 refined (tester answers): dashboard appears immediately at tile
@@ -409,7 +409,7 @@ All work complete and device-validated. Daily driver: signed `1.0.1`
 ## Completed Phases
 
 - Phase 0 — minimum viable Android project: scaffold builds, installs, and
-  launches on the Xiaomi 11i showing the full "Circle Search / Phase 0 —
+  launches on the Xiaomi 11i showing the full "Lasso / Phase 0 —
   project scaffold OK" UI (incl. large-font clipping fix, commit a86db9c).
 - Phase 1 — CLOSED with negative verdict (tester-confirmed 2026-09-07):
   Xiaomi 11i does not expose fingerprint gestures (`NOT AVAILABLE`).
@@ -436,7 +436,7 @@ All work complete and device-validated. Daily driver: signed `1.0.1`
 
 - [x] `./gradlew assembleDebug` succeeds on the dev machine.
 - [x] `app/build/outputs/apk/debug/app-debug.apk` installs on the Xiaomi 11i.
-- [x] App launches and shows "Circle Search / Phase 0 — project scaffold OK".
+- [x] App launches and shows "Lasso / Phase 0 — project scaffold OK".
 - [x] Human tester explicitly confirms pass.
 
 ## Current Blockers
@@ -447,7 +447,7 @@ All work complete and device-validated. Daily driver: signed `1.0.1`
 ## Test Results
 
 - Round 1 (FAIL): install + launch OK, but both TextViews clipped on the
-  right ("Circle Searc" / "Phase 0 — project scaffol…"). Cause: code-related —
+  right ("Lasso" / "Phase 0 — project scaffol…"). Cause: code-related —
   `wrap_content` TextViews in a centered layout overflow instead of wrapping
   under the device's large system font. Fix: `match_parent` width +
   `center_horizontal` gravity so text wraps. Rebuilt 2026-09-07, retest pending.
@@ -479,8 +479,8 @@ All work complete and device-validated. Daily driver: signed `1.0.1`
   - Volume keys: FAIL — no key events reach `onKeyEvent` (`(none yet)`, count
     0); keys just adjust volume. Ruled out on this MIUI build.
   - A11y shortcut/button: PASS — 49 clicks registered via the floating
-    "Circle Search shortcut" button (per-service shortcut toggle exists in
-    Settings → Accessibility → Circle Search). Note: API availability flag
+    "Lasso shortcut" button (per-service shortcut toggle exists in
+    Settings → Accessibility → Lasso). Note: API availability flag
     reads NOT AVAILABLE while clicks work — flag is cosmetic here, clicks are
     the ground truth.
   - QS tile: PASS — 2 taps, opens app.

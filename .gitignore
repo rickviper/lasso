@@ -5,3 +5,8 @@ local.properties
 .DS_Store
 /build/
 /app/build/
+
+# Project documentation (internal)
+PROJECT.md
+PROJECT_STATUS.md
+AGENTS.md

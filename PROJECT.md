@@ -1,9 +1,9 @@
-# Circle Search — Project Description
+# Lasso — Project Description
 
 Personal Android utility for Xiaomi 11i (Android 13) providing a
 Circle-to-Search-style experience.
 
-Target UX: ACTIVATE → CIRCLE → SEARCH
+Target UX: ACTIVATE → LASSO → SEARCH
 
 ## Architecture (as of Phase 5)
 

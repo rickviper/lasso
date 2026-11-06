@@ -1,4 +1,4 @@
-package com.ullas.circlesearch
+package com.lasso.app
 
 import android.app.Activity
 import android.app.Notification
@@ -39,7 +39,7 @@ class CaptureService : Service() {
         const val EXTRA_WIDTH = "width"
         const val EXTRA_HEIGHT = "height"
         const val EXTRA_DENSITY = "density"
-        private const val ACTION_CANCEL = "com.ullas.circlesearch.action.CANCEL_CAPTURE"
+        private const val ACTION_CANCEL = "com.lasso.app.action.CANCEL_CAPTURE"
         private const val CHANNEL_ID = "capture_service"
         private const val NOTIF_ID = 42
         private const val CHANNEL_SEARCH_ID = "search_ready"
@@ -96,7 +96,7 @@ class CaptureService : Service() {
             NotificationChannel(CHANNEL_ID, "Screen capture", NotificationManager.IMPORTANCE_LOW)
         )
         val notification = Notification.Builder(this, CHANNEL_ID)
-            .setContentTitle("Circle Search capture")
+            .setContentTitle("Lasso capture")
             .setContentText("Capturing screen")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .addAction(
@@ -151,7 +151,7 @@ class CaptureService : Service() {
             }
         }, mainHandler)
         val display = projection.createVirtualDisplay(
-            "CircleSearchCapture", capW, capH, density,
+            "LassoCapture", capW, capH, density,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             reader.surface, null, null
         )
@@ -373,7 +373,7 @@ class CaptureService : Service() {
      * Temp-file lifecycle: each run keeps only its own files. Previous runs'
      * app-private files are deleted when a new capture starts, so nothing
      * accumulates. (Pre-fix MediaStore gallery copies belong to the user
-     * now — left alone; delete the Pictures/CircleSearch album once
+     * now — left alone; delete the Pictures/Lasso album once
      * manually. Cancel/fail paths save nothing, so nothing extra to clean.)
      */
     private fun pruneOldRuns() {
@@ -403,8 +403,8 @@ class CaptureService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val notification = Notification.Builder(this, CHANNEL_SEARCH_ID)
-            .setContentTitle("Circle Search ready")
-            .setContentText("Tap to search the circled image")
+            .setContentTitle("Lasso ready")
+            .setContentText("Tap to search the lassoed image")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentIntent(search)
             .setAutoCancel(true)
