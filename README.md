@@ -240,14 +240,6 @@ Two honest dead ends are preserved in the docs because they're genuinely useful 
 
 ---
 
-## Project Documentation
-
-- [`AGENTS.md`](AGENTS.md) — development rules: incremental phases, scope discipline, security restrictions, testing protocol.
-- [`PROJECT.md`](PROJECT.md) — architecture, key device findings, the visual-search feasibility matrix, roadmap.
-- [`PROJECT_STATUS.md`](PROJECT_STATUS.md) — per-phase acceptance criteria, test rounds with root causes, MIUI recipe, current status.
-
----
-
 ## License
 
 Personal project, shared as-is for educational/reference use. No warranty. If you fork it, mind your local privacy laws and Google's terms when handing images to Lens.
